@@ -8,6 +8,5 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://+:$PORT
-EXPOSE $PORT
-ENTRYPOINT ["dotnet", "AdministradorFincasOrtegaDelgado.dll"]
+EXPOSE 8080
+CMD ["sh", "-c", "ASPNETCORE_URLS=http://+:${PORT:-8080} dotnet AdministradorFincasOrtegaDelgado.dll"]
