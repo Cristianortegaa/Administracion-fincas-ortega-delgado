@@ -1,0 +1,17 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.vs/
+*.user
+appsettings.Development.json
+
+# Angular
+fincas-front/node_modules/
+fincas-front/dist/
+fincas-front/.angular/
+
+# OS
+.DS_Store
+Thumbs.db

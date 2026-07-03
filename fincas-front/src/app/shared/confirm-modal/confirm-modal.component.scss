@@ -1,0 +1,86 @@
+.confirm-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 32px 32px;
+  text-align: center;
+  animation: slideUp .2s ease;
+}
+
+/* ── Icono ──────────────────────────────────────────────── */
+.confirm-icon-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 24px;
+}
+
+.confirm-ring {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid var(--danger-border);
+  animation: pulseRing 2s ease-in-out infinite;
+}
+
+.confirm-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff1f1 0%, var(--danger-bg) 100%);
+  border: 1.5px solid var(--danger-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(185,28,28,.12);
+
+  i {
+    font-size: 28px;
+    color: var(--danger);
+  }
+}
+
+@keyframes pulseRing {
+  0%, 100% { transform: scale(1);    opacity: .55; }
+  50%       { transform: scale(1.14); opacity: .18; }
+}
+
+/* ── Textos ─────────────────────────────────────────────── */
+.confirm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.025em;
+  margin-bottom: 6px;
+}
+
+.confirm-detail {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 12px;
+  margin-bottom: 10px;
+}
+
+.confirm-message {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+/* ── Botones ────────────────────────────────────────────── */
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+
+  .btn { min-width: 120px; justify-content: center; }
+}

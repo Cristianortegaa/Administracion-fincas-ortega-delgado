@@ -1,0 +1,194 @@
+<div class="page-content">
+
+  <!-- ── Cabecera ─────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <i class="fa-solid fa-circle-exclamation"></i> Incidencias
+      </h1>
+      <p class="page-subtitle">Gestión de incidencias y mantenimiento de fincas</p>
+    </div>
+    <button class="btn btn-primary" (click)="openNew()">
+      <i class="fa-solid fa-plus"></i> Nueva Incidencia
+    </button>
+  </div>
+
+  <!-- ── Stats ─────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+      <div>
+        <p class="stat-value">{{ incidencias().length }}</p>
+        <p class="stat-label">Total</p>
+      </div>
+    </div>
+    <div class="stat-card estado-abierto">
+      <span class="stat-icon"><i class="fa-solid fa-circle-dot"></i></span>
+      <div>
+        <p class="stat-value">{{ totalAbiertas }}</p>
+        <p class="stat-label">Abiertas</p>
+      </div>
+    </div>
+    <div class="stat-card estado-proceso">
+      <span class="stat-icon"><i class="fa-solid fa-arrows-rotate"></i></span>
+      <div>
+        <p class="stat-value">{{ totalEnProceso }}</p>
+        <p class="stat-label">En Proceso</p>
+      </div>
+    </div>
+    <div class="stat-card estado-finalizado">
+      <span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span>
+      <div>
+        <p class="stat-value">{{ totalResueltas }}</p>
+        <p class="stat-label">Resueltas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filtros ───────────────────────────────────────── -->
+  <div class="filters-bar card">
+    <div class="search-wrap">
+      <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input
+        type="text"
+        placeholder="Buscar por comunidad, tipo, descripción, reparador..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        class="search-input"
+      />
+    </div>
+
+    <div class="filters-right">
+      <select [(ngModel)]="filter.estado" (ngModelChange)="onFilterChange()" class="filter-select">
+        <option value="">Todos los estados</option>
+        @for (e of estados; track e.value) {
+          <option [value]="e.value">{{ e.label }}</option>
+        }
+      </select>
+
+      @if (comunidades().length > 0) {
+        <select [(ngModel)]="filter.comunidad" (ngModelChange)="onFilterChange()" class="filter-select">
+          <option value="">Todas las comunidades</option>
+          @for (c of comunidades(); track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      }
+
+      @if (tipos().length > 0) {
+        <select [(ngModel)]="filter.tipo" (ngModelChange)="onFilterChange()" class="filter-select">
+          <option value="">Todos los tipos</option>
+          @for (t of tipos(); track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      }
+
+      @if (filter.estado || filter.comunidad || filter.tipo || searchText) {
+        <button class="btn btn-ghost btn-sm" (click)="clearFilters()">
+          <i class="fa-solid fa-xmark"></i> Limpiar
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Tabla ─────────────────────────────────────────── -->
+  <div class="table-card card">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando incidencias...</p>
+      </div>
+    } @else if (incidencias().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
+        <h3>No hay incidencias registradas</h3>
+        <p>Crea la primera incidencia pulsando el botón superior</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Comunidad</th>
+              <th>Ubicación</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+              <th>Reparador</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of incidencias(); track i.id) {
+              <tr (click)="openDetail(i)" class="table-row">
+                <td class="date-cell">{{ i.fechaIncidencia | date:'dd/MM/yy' }}</td>
+                <td class="comunidad-cell">{{ i.comunidad }}</td>
+                <td class="ubicacion-cell">{{ i.ubicacion || '—' }}</td>
+                <td><span class="tipo-tag">{{ i.tipo || '—' }}</span></td>
+                <td class="descripcion-cell">{{ i.descripcion?.at(-1)?.texto || '—' }}</td>
+                <td class="reparador-cell">{{ i.reparador || '—' }}</td>
+                <td><app-status-badge [estado]="i.estado" /></td>
+                <td class="actions-cell" (click)="$event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm btn-icon" (click)="openEdit(i)" title="Editar">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    class="btn btn-ghost btn-sm btn-icon btn-delete"
+                    (click)="confirmDelete(i, $event)"
+                    [disabled]="deleting() === i.id"
+                    title="Eliminar"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        {{ incidencias().length }} incidencia{{ incidencias().length !== 1 ? 's' : '' }} encontrada{{ incidencias().length !== 1 ? 's' : '' }}
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Toasts ────────────────────────────────────────── -->
+<div class="toast-container">
+  @for (t of toastService.toasts(); track t.id) {
+    <div class="toast" [class]="'toast-' + t.type" (click)="toastService.remove(t.id)">
+      <i [class]="t.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"></i>
+      {{ t.message }}
+    </div>
+  }
+</div>
+
+@if (showForm()) {
+  <app-incidencia-form
+    [incidencia]="selected()"
+    (saved)="onSaved()"
+    (closed)="closeForm()"
+  />
+}
+
+@if (showDetail() && selected()) {
+  <app-incidencia-detail
+    [incidencia]="selected()!"
+    (closed)="closeDetail()"
+    (editRequested)="openEdit($event)"
+  />
+}
+
+<!-- ── Confirmar borrado ───────────────────────────────── -->
+@if (pendingDelete()) {
+  <app-confirm-modal
+    [title]="'Eliminar incidencia'"
+    [detail]="'Incidencia #' + pendingDelete()!.id + ' — ' + pendingDelete()!.comunidad"
+    [loading]="deleting() !== null"
+    (confirmed)="doDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

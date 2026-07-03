@@ -1,0 +1,9 @@
+@if (!isLoginPage()) {
+  <app-sidebar />
+}
+<div class="content-wrap" [class.with-sidebar]="!isLoginPage()">
+  @if (!isLoginPage()) {
+    <app-navbar />
+  }
+  <router-outlet />
+</div>

@@ -1,0 +1,94 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ title }}</h2>
+      <button class="btn btn-ghost btn-icon" type="button" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form class="modal-body" #f="ngForm" (ngSubmit)="submit()">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="fechaIncidencia">Fecha Incidencia *</label>
+          <input id="fechaIncidencia" name="fechaIncidencia" type="date"
+            [(ngModel)]="form.fechaIncidencia" required />
+        </div>
+
+        <div class="form-group">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" name="tipo" [(ngModel)]="form.tipo">
+            <option value="">— Seleccionar tipo —</option>
+            @for (t of tipos; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="estado">Estado *</label>
+          <select id="estado" name="estado" [(ngModel)]="form.estado" required>
+            @for (e of estados; track e.value) {
+              <option [value]="e.value">{{ e.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group col-2">
+          <label for="comunidad">Comunidad *</label>
+          <input id="comunidad" name="comunidad" type="text"
+            placeholder="Ej: Rioja 17" [(ngModel)]="form.comunidad" required />
+        </div>
+
+        <div class="form-group">
+          <label for="ubicacion">Ubicación</label>
+          <input id="ubicacion" name="ubicacion" type="text"
+            placeholder="Ej: Escalera B, Portal..." [(ngModel)]="form.ubicacion" />
+        </div>
+
+        <div class="form-group col-3">
+          @if (isEdit && existingDescripciones.length > 0) {
+            <app-descripciones
+              [entradas]="existingDescripciones"
+              emptyText="Sin descripción."
+            />
+          }
+          <label for="descripcion">
+            {{ isEdit ? 'Nueva descripción (opcional)' : 'Descripción *' }}
+          </label>
+          <textarea id="descripcion" name="descripcion" rows="4"
+            placeholder="Descripción detallada de la incidencia..."
+            [(ngModel)]="form.descripcion" [required]="!isEdit"></textarea>
+        </div>
+
+        <div class="form-group col-3">
+          <label for="reparador">Reparador / Empresa</label>
+          <input id="reparador" name="reparador" type="text"
+            placeholder="Ej: Fontanería García" [(ngModel)]="form.reparador" />
+        </div>
+
+        <div class="form-group col-3">
+          <label for="observaciones">Observaciones</label>
+          <textarea id="observaciones" name="observaciones" rows="3"
+            placeholder="Notas adicionales, seguimiento, presupuesto..."
+            [(ngModel)]="form.observaciones"></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving || f.invalid">
+          @if (saving) { <span class="spinner-sm"></span> }
+          @if (!saving) { <i class="fa-solid fa-floppy-disk"></i> }
+          {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear Incidencia') }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

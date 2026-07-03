@@ -1,0 +1,262 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal modal-wide" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>{{ title }}</h2>
+      <button class="btn btn-ghost btn-icon" type="button" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form class="modal-body" #f="ngForm" (ngSubmit)="submit()">
+
+      <!-- ── Tipo switcher (solo en creación) ──────────────── -->
+      @if (!isEdit) {
+      <div class="tipo-switcher">
+        <span class="tipo-label">Tipo de expediente</span>
+        <div class="tipo-tabs">
+          <button
+            type="button"
+            class="tipo-tab"
+            [class.active]="form.tipo === 'Incidencia'"
+            [disabled]="isEdit"
+            (click)="setTipo('Incidencia')"
+          >
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            Incidencia
+          </button>
+          <button
+            type="button"
+            class="tipo-tab tipo-tab--siniestro"
+            [class.active]="form.tipo === 'Siniestro'"
+            [disabled]="isEdit"
+            (click)="setTipo('Siniestro')"
+          >
+            <i class="fa-solid fa-shield-halved"></i>
+            Siniestro
+          </button>
+        </div>
+        @if (isSiniestro) {
+          <span class="tipo-badge tipo-badge--siniestro">
+            <i class="fa-solid fa-circle-info"></i>
+            Se ha dado parte al seguro
+          </span>
+        }
+      </div>
+      } <!-- /isEdit -->
+
+      <div class="form-grid">
+
+        <!-- Fecha + Estado + N.º CDAD -->
+        <div class="form-group">
+          <label for="fecha">Fecha *</label>
+          <input
+            id="fecha"
+            name="fecha"
+            type="date"
+            [(ngModel)]="form.fecha"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="estado">Estado *</label>
+          <select id="estado" name="estado" [(ngModel)]="form.estado" required>
+            @for (e of estados; track e.value) {
+              <option [value]="e.value">{{ e.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (isSiniestro) {
+          <div class="form-group">
+            <label for="numeroCDA">N.º CDAD</label>
+            <input
+              id="numeroCDA"
+              name="numeroCDA"
+              type="text"
+              placeholder="Ej: 105"
+              [(ngModel)]="form.numeroCDA"
+            />
+          </div>
+        }
+
+        <!-- Comunidad + Nº Comunidad + Ubicación -->
+        <div class="form-group col-2">
+          <label for="comunidad">Comunidad *</label>
+          <input
+            id="comunidad"
+            name="comunidad"
+            type="text"
+            placeholder="Ej: Rioja 17"
+            [(ngModel)]="form.comunidad"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="numeroComunidad">Nº Comunidad</label>
+          <input
+            id="numeroComunidad"
+            name="numeroComunidad"
+            type="number"
+            placeholder="Ej: 1"
+            [(ngModel)]="form.numeroComunidad"
+            min="1"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="ubicacion">Ubicación</label>
+          <input
+            id="ubicacion"
+            name="ubicacion"
+            type="text"
+            placeholder="Ej: 7ºF Dcha, Portería..."
+            [(ngModel)]="form.ubicacion"
+          />
+        </div>
+
+        <!-- Tipo de incidencia -->
+        <div class="form-group col-2">
+          <label for="tipoIncidencia">Tipo de incidencia</label>
+          <select id="tipoIncidencia" name="tipoIncidencia" [(ngModel)]="form.tipoIncidencia">
+            <option value="">— Seleccionar —</option>
+            @for (t of tiposIncidencia; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group col-3">
+          @if (isEdit && existingDescripciones.length > 0) {
+            <app-descripciones
+              [entradas]="existingDescripciones"
+              emptyText="Sin descripción registrada."
+            />
+          }
+          <label for="descripcion">
+            {{ isEdit ? 'Nueva descripción (opcional)' : 'Descripción *' }}
+          </label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            placeholder="Describe la incidencia o siniestro..."
+            [(ngModel)]="form.descripcion"
+            rows="4"
+            [required]="!isEdit"
+          ></textarea>
+        </div>
+
+        <!-- Campos exclusivos de siniestro -->
+        @if (isSiniestro) {
+          <div class="siniestro-section col-3">
+            <div class="siniestro-section-header">
+              <i class="fa-solid fa-building-shield"></i>
+              Datos del Seguro
+            </div>
+            <div class="form-grid inner-grid">
+              <div class="form-group">
+                <label for="companiaSeguros">Compañía de Seguros</label>
+                <input
+                  id="companiaSeguros"
+                  name="companiaSeguros"
+                  type="text"
+                  placeholder="Ej: Ocaso, Mapfre..."
+                  [(ngModel)]="form.companiaSeguros"
+                />
+              </div>
+              <div class="form-group">
+                <label for="telefonoCompania">Teléfono Compañía</label>
+                <input
+                  id="telefonoCompania"
+                  name="telefonoCompania"
+                  type="tel"
+                  placeholder="Ej: 91.538.74.90"
+                  [(ngModel)]="form.telefonoCompania"
+                />
+              </div>
+              <div class="form-group">
+                <label for="referenciaSiniestro">Referencia Siniestro</label>
+                <input
+                  id="referenciaSiniestro"
+                  name="referenciaSiniestro"
+                  type="text"
+                  placeholder="Ej: 87512/2026"
+                  [(ngModel)]="form.referenciaSiniestro"
+                />
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Reparadores múltiples -->
+        <div class="form-group col-3">
+          <label>Empresas reparadoras</label>
+
+          <!-- Lista de reparadores añadidos -->
+          @if (form.reparadores.length > 0) {
+            <div class="reparadores-list">
+              @for (r of form.reparadores; track r; let i = $index) {
+                <div class="reparador-tag">
+                  <i class="fa-solid fa-helmet-safety"></i>
+                  <span>{{ r }}</span>
+                  <button
+                    type="button"
+                    class="reparador-remove"
+                    (click)="removeReparador(i)"
+                    title="Eliminar"
+                  ><i class="fa-solid fa-xmark"></i></button>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Input para añadir -->
+          <div class="reparador-add">
+            <input
+              type="text"
+              placeholder="Nombre empresa y pulsa Enter o +"
+              [(ngModel)]="newReparador"
+              name="newReparador"
+              (keydown)="onReparadorKeydown($event)"
+              class="reparador-input"
+            />
+            <button
+              type="button"
+              class="btn btn-secondary btn-icon"
+              (click)="addReparador()"
+              [disabled]="!newReparador.trim()"
+              title="Añadir empresa"
+            ><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+
+        <div class="form-group col-3">
+          <label for="observaciones">Observaciones</label>
+          <textarea
+            id="observaciones"
+            name="observaciones"
+            placeholder="Evolución, acciones tomadas, notas adicionales..."
+            [(ngModel)]="form.observaciones"
+            rows="3"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving || f.invalid">
+          @if (saving) { <span class="spinner-sm"></span> }
+          @if (!saving) { <i class="fa-solid fa-floppy-disk"></i> }
+          {{ saving ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear Expediente') }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

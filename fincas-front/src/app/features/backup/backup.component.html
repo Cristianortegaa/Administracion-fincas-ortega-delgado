@@ -1,0 +1,218 @@
+<div class="page-content">
+
+  <!-- ── Cabecera ─────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <i class="fa-solid fa-database"></i> Copias de Seguridad
+      </h1>
+      <p class="page-subtitle">Gestión y programación de backups de la base de datos</p>
+    </div>
+  </div>
+
+  <!-- ── Mensajes de acción ────────────────────────────── -->
+  @if (actionMsg()) {
+    <div class="action-banner action-banner--success">
+      <i class="fa-solid fa-circle-check"></i> {{ actionMsg() }}
+    </div>
+  }
+  @if (actionError()) {
+    <div class="action-banner action-banner--error">
+      <i class="fa-solid fa-circle-xmark"></i> {{ actionError() }}
+    </div>
+  }
+
+  <!-- ── Descarga manual ───────────────────────────────── -->
+  <div class="card download-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-laptop"></i> Guardar en tu ordenador
+    </h2>
+    <p class="section-desc">Elige la carpeta de tu PC donde quieres guardar las copias. Una vez seleccionada, los backups se guardarán ahí directamente sin más diálogos.</p>
+
+    <!-- Selector de carpeta -->
+    @if (folderPickerSupported) {
+      <div class="folder-picker">
+        @if (pcFolderName()) {
+          <div class="folder-selected">
+            <i class="fa-solid fa-folder-open folder-icon"></i>
+            <span class="folder-name">{{ pcFolderName() }}</span>
+            <button class="btn btn-ghost btn-sm" (click)="clearPcFolder()" title="Cambiar carpeta">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        } @else {
+          <div class="folder-empty">
+            <i class="fa-solid fa-folder folder-icon folder-icon--empty"></i>
+            <span class="folder-hint">Sin carpeta seleccionada</span>
+          </div>
+        }
+        <button class="btn btn-secondary" (click)="pickPcFolder()">
+          <i class="fa-solid fa-folder-open"></i>
+          {{ pcFolderName() ? 'Cambiar carpeta' : 'Seleccionar carpeta' }}
+        </button>
+      </div>
+    } @else {
+      <div class="browser-warning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Tu navegador no soporta el selector de carpetas. Usa Chrome o Edge para esta función.
+      </div>
+    }
+
+    <div class="download-actions">
+      <button class="btn btn-primary btn-lg" (click)="downloadNow()" [disabled]="downloading() || savingServer()">
+        @if (downloading()) { <span class="spinner-sm"></span> } @else { <i class="fa-solid fa-download"></i> }
+        {{ downloading() ? 'Generando copia…' : 'Descargar copia ahora' }}
+      </button>
+      <span class="download-hint">
+        @if (pcFolderName()) {
+          Se guardará en <strong>{{ pcFolderName() }}</strong>
+        } @else {
+          Se abrirá el diálogo de guardar
+        }
+      </span>
+    </div>
+  </div>
+
+  <!-- ── Configuración ─────────────────────────────────── -->
+  <div class="card settings-card">
+    <div class="settings-header">
+      <h2 class="section-title">
+        <i class="fa-solid fa-gear"></i> Backup automático diario (servidor)
+      </h2>
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="settings.autoEnabled" />
+        <span class="toggle-slider"></span>
+        <span class="toggle-label">{{ settings.autoEnabled ? 'Activado' : 'Desactivado' }}</span>
+      </label>
+    </div>
+    <p class="section-desc">El servidor guarda una copia automáticamente cada día a la hora indicada. Puedes descargarlas después desde la lista de abajo.</p>
+
+    @if (!settingsLoading()) {
+      <div class="settings-grid">
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-server"></i> Carpeta en el servidor
+          </label>
+          <input
+            type="text"
+            class="form-input"
+            [(ngModel)]="settings.backupFolder"
+            placeholder="backups  (o ruta absoluta como /home/fincas/backups)"
+          />
+          <span class="form-hint">Ruta dentro del servidor donde corre el backend.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-clock"></i> Hora diaria
+          </label>
+          <input type="time" class="form-input form-input--time" [(ngModel)]="settings.scheduledTime" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-layer-group"></i> Máximo de copias
+          </label>
+          <input type="number" class="form-input form-input--number" [(ngModel)]="settings.maxBackups" min="1" max="365" />
+          <span class="form-hint">Las más antiguas se eliminan solas.</span>
+        </div>
+      </div>
+
+      @if (settingsError()) {
+        <div class="settings-msg settings-msg--error">
+          <i class="fa-solid fa-circle-exclamation"></i> {{ settingsError() }}
+        </div>
+      }
+      @if (settingsMsg()) {
+        <div class="settings-msg settings-msg--success">
+          <i class="fa-solid fa-circle-check"></i> {{ settingsMsg() }}
+        </div>
+      }
+
+      <div class="settings-footer">
+        <button class="btn btn-ghost btn-sm" (click)="saveToServer()" [disabled]="savingServer() || downloading()">
+          @if (savingServer()) { <span class="spinner-sm" style="border-top-color:var(--primary)"></span> } @else { <i class="fa-solid fa-server"></i> }
+          {{ savingServer() ? 'Guardando…' : 'Guardar ahora en servidor' }}
+        </button>
+        <button class="btn btn-primary" (click)="saveSettings()" [disabled]="settingsSaving()">
+          @if (settingsSaving()) { <span class="spinner-sm"></span> } @else { <i class="fa-solid fa-floppy-disk"></i> }
+          {{ settingsSaving() ? 'Guardando…' : 'Guardar configuración' }}
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- ── Lista de backups en servidor ─────────────────── -->
+  <div class="card table-card">
+    <div class="table-card-header">
+      <h2 class="section-title">
+        <i class="fa-solid fa-clock-rotate-left"></i> Copias almacenadas en el servidor
+      </h2>
+      <button class="btn btn-ghost btn-sm" (click)="loadFiles()" title="Recargar">
+        <i class="fa-solid fa-arrows-rotate"></i>
+      </button>
+    </div>
+
+    @if (filesLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div><p>Cargando copias…</p>
+      </div>
+    } @else if (filesError()) {
+      <div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i> {{ filesError() }}</div>
+    } @else if (files().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+        <h3>No hay copias almacenadas</h3>
+        <p>Pulsa "Guardar ahora en servidor" o espera al backup automático.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Archivo</th>
+              <th class="col-date">Fecha</th>
+              <th class="col-size">Tamaño</th>
+              <th class="col-actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (file of files(); track file.fileName) {
+              <tr>
+                <td class="filename-cell">
+                  <i class="fa-solid fa-file-code file-icon"></i>{{ file.fileName }}
+                </td>
+                <td class="date-cell">{{ formatDate(file.createdAt) }}</td>
+                <td class="size-cell">{{ file.displaySize }}</td>
+                <td class="actions-cell">
+                  <button class="btn btn-ghost btn-sm btn-icon" (click)="downloadFile(file)" title="Descargar al PC">
+                    <i class="fa-solid fa-download"></i>
+                  </button>
+                  <button class="btn btn-ghost btn-sm btn-icon btn-delete" (click)="confirmDelete(file)" title="Eliminar del servidor">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        {{ files().length }} copia{{ files().length !== 1 ? 's' : '' }} en el servidor
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Confirmar borrado ──────────────────────────── -->
+@if (pendingDelete()) {
+  <app-confirm-modal
+    [title]="'Eliminar copia'"
+    [detail]="pendingDelete()!.fileName"
+    [message]="'Esta acción eliminará el archivo del servidor de forma permanente.'"
+    [loading]="deleting()"
+    (confirmed)="doDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

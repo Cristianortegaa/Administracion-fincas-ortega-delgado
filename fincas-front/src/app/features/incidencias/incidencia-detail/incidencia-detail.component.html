@@ -1,0 +1,91 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal modal-wide" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="detail-title">
+        <h2>Incidencia #{{ incidencia.id }}</h2>
+        <app-status-badge [estado]="incidencia.estado" />
+      </div>
+      <button class="btn btn-ghost btn-icon" type="button" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-grid">
+
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-circle-info"></i> Información General
+          </h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Fecha</span>
+              <span class="info-value">{{ incidencia.fechaIncidencia | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tipo</span>
+              <span class="info-value tipo-tag">{{ incidencia.tipo || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Comunidad</span>
+              <span class="info-value highlight">{{ incidencia.comunidad }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Ubicación</span>
+              <span class="info-value">{{ incidencia.ubicacion || '—' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-wrench"></i> Reparador
+          </h3>
+          <p class="info-value">{{ incidencia.reparador || 'No asignado' }}</p>
+        </div>
+
+        <div class="detail-section col-span-2">
+          <h3 class="section-title">
+            <i class="fa-solid fa-file-lines"></i> Descripción
+          </h3>
+          <app-descripciones
+            [entradas]="incidencia.descripcion"
+            emptyText="Sin descripción."
+          />
+        </div>
+
+        @if (incidencia.observaciones) {
+          <div class="detail-section col-span-2">
+            <h3 class="section-title">
+              <i class="fa-solid fa-note-sticky"></i> Observaciones
+            </h3>
+            <div class="details-text">{{ incidencia.observaciones }}</div>
+          </div>
+        }
+
+        <div class="detail-section meta-section">
+          <span class="meta">
+            <i class="fa-solid fa-calendar-plus"></i>
+            Creada: {{ incidencia.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+          <span class="meta">
+            <i class="fa-solid fa-calendar-check"></i>
+            Modificada: {{ incidencia.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="close()">
+        <i class="fa-solid fa-xmark"></i> Cerrar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="edit()">
+        <i class="fa-solid fa-pen"></i> Editar
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,110 @@
+.modal-wide { max-width: 820px; }
+
+.detail-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Grid de detalle ──────────────────────────────────────── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.detail-section {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+}
+
+.col-span-2 { grid-column: span 2; }
+
+/* ── Section title ────────────────────────────────────────── */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 12px;
+
+  i { color: var(--gold); }
+}
+
+/* ── Info grid ────────────────────────────────────────────── */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.info-label {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 13.5px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.highlight { color: var(--navy); font-weight: 700; }
+
+/* ── Tipo tag ─────────────────────────────────────────────── */
+.tipo-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  background: var(--gold-light);
+  color: var(--gold-dark);
+  border: 1px solid rgba(184,146,10,.25);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+
+/* ── Texto largo ──────────────────────────────────────────── */
+.details-text {
+  font-size: 13.5px;
+  color: var(--text-mid);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* ── Meta ─────────────────────────────────────────────────── */
+.meta-section {
+  grid-column: span 2;
+  background: transparent;
+  border: none;
+  padding: 4px 0 0;
+  display: flex;
+  gap: 24px;
+}
+
+.meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  i { color: var(--border-strong); }
+}

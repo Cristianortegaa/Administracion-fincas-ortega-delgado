@@ -1,0 +1,363 @@
+/* ═══════════════════════════════════════════════════════════
+   FINCAS ORTEGA DELGADO — Design System
+   Paleta corporativa basada en el logotipo
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Paleta base del logo ──────────────────────────────── */
+  --gold:          #B8920A;
+  --gold-dark:     #8C6E07;
+  --gold-light:    #FAF3DC;
+  --gold-mid:      #E8D28A;
+  --navy:          #1C2740;
+  --navy-mid:      #2E3D5C;
+
+  /* ── Paleta semántica base ────────────────────────────── */
+  --success:        #15803D;
+  --success-bg:     #F0FDF4;
+  --success-border: #BBF7D0;
+  --warning:        #B45309;
+  --warning-bg:     #FFFBEB;
+  --warning-border: #FDE68A;
+  --danger:         #B91C1C;
+  --danger-bg:      #FEF2F2;
+  --danger-border:  #FECACA;
+  --info:           #1D4ED8;
+  --info-bg:        #EFF6FF;
+  --info-border:    #BFDBFE;
+
+  /* ── TOKENS DE ESTADO (fuente única de verdad) ─────────
+     Cambiar aquí afecta badges, stat cards, KPI y todo.  */
+  --estado-abierto:           var(--success);
+  --estado-abierto-bg:        var(--success-bg);
+  --estado-abierto-border:    var(--success-border);
+
+  --estado-proceso:           var(--info);
+  --estado-proceso-bg:        var(--info-bg);
+  --estado-proceso-border:    var(--info-border);
+
+  --estado-finalizado:        var(--danger);
+  --estado-finalizado-bg:     var(--danger-bg);
+  --estado-finalizado-border: var(--danger-border);
+
+  /* ── Alias legacy (no usar en código nuevo) ────────────*/
+  --primary: var(--gold);
+  --accent:  var(--success);
+
+  /* ── Superficies ──────────────────────────────────────── */
+  --bg:            #F1F3F7;
+  --surface:       #FFFFFF;
+  --surface-alt:   #F8F9FB;
+  --sidebar-bg:    #1C2740;
+
+  /* ── Bordes ───────────────────────────────────────────── */
+  --border:        #DDE1EB;
+  --border-strong: #BEC5D4;
+
+  /* ── Tipografía ───────────────────────────────────────── */
+  --text:          #1C2740;
+  --text-mid:      #4A5568;
+  --text-muted:    #8896AE;
+
+  /* ── Layout ───────────────────────────────────────────── */
+  --sidebar-width: 256px;
+  --navbar-height: 60px;
+
+  /* ── Sombras ──────────────────────────────────────────── */
+  --shadow-xs:  0 1px 2px rgba(28,39,64,.06);
+  --shadow-sm:  0 1px 4px rgba(28,39,64,.08), 0 1px 2px rgba(28,39,64,.04);
+  --shadow:     0 2px 8px rgba(28,39,64,.10), 0 1px 3px rgba(28,39,64,.06);
+  --shadow-md:  0 4px 16px rgba(28,39,64,.12), 0 2px 4px rgba(28,39,64,.06);
+  --shadow-lg:  0 8px 32px rgba(28,39,64,.14), 0 2px 8px rgba(28,39,64,.08);
+
+  /* ── Radios ───────────────────────────────────────────── */
+  --radius-sm:  4px;
+  --radius:     6px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+}
+
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+/* Los custom elements de Angular son inline por defecto — los forzamos a block */
+app-root, app-dashboard, app-siniestros-list, app-incidencias-list,
+app-siniestro-form, app-siniestro-detail, app-incidencia-form,
+app-incidencia-detail, app-status-badge { display: block; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Tipografía ─────────────────────────────────────────── */
+h1, h2, h3, h4 { line-height: 1.25; color: var(--text); }
+p { color: var(--text-mid); }
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Layout ─────────────────────────────────────────────── */
+/* El layout se gestiona en app.component — aquí solo la página */
+.page-content { padding: 28px 32px; width: 100%; box-sizing: border-box; }
+
+/* ── Card ───────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Botones ────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, box-shadow .15s, color .15s;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+
+.btn-primary {
+  background: var(--gold);
+  color: #fff;
+  border-color: var(--gold-dark);
+  box-shadow: 0 1px 2px rgba(184,146,10,.3);
+}
+.btn-primary:hover { background: var(--gold-dark); box-shadow: 0 2px 6px rgba(184,146,10,.4); }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-xs);
+}
+.btn-secondary:hover { background: var(--surface-alt); border-color: var(--text-muted); }
+
+.btn-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+.btn-danger:hover { background: #fee2e2; }
+
+.btn-danger-solid {
+  background: var(--danger);
+  color: #fff;
+  border-color: #991b1b;
+  box-shadow: 0 1px 2px rgba(185,28,28,.30);
+}
+.btn-danger-solid:hover { background: #991b1b; box-shadow: 0 2px 6px rgba(185,28,28,.40); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: transparent;
+}
+.btn-ghost:hover { background: var(--surface-alt); color: var(--text); }
+
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-icon { padding: 7px; }
+
+/* ── Form controls ──────────────────────────────────────── */
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  letter-spacing: .03em;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 8px 11px;
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.4;
+  transition: border-color .15s, box-shadow .15s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,146,10,.12);
+}
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
+option { background: #fff; color: var(--text); }
+textarea { resize: vertical; min-height: 90px; }
+select { cursor: pointer; }
+
+/* ── Badges de estado ───────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* Consume tokens — cambiar colores solo en :root */
+.badge-abierto    { color: var(--estado-abierto);    background: var(--estado-abierto-bg);    border-color: var(--estado-abierto-border); }
+.badge-proceso    { color: var(--estado-proceso);    background: var(--estado-proceso-bg);    border-color: var(--estado-proceso-border); }
+.badge-finalizado { color: var(--estado-finalizado); background: var(--estado-finalizado-bg); border-color: var(--estado-finalizado-border); }
+.badge-cerrado    { color: var(--estado-finalizado); background: var(--estado-finalizado-bg); border-color: var(--estado-finalizado-border); }
+
+/* ── Sistema global de estado (stat cards + KPI) ────────────
+   Aplica color a borde, número e icono desde el padre.
+   Los componentes solo añaden layout — nada de colores.    */
+
+/* Stat cards */
+.estado-abierto    { border-left-color: var(--estado-abierto)    !important; }
+.estado-proceso    { border-left-color: var(--estado-proceso)    !important; }
+.estado-finalizado { border-left-color: var(--estado-finalizado) !important; }
+.estado-cerrado    { border-left-color: var(--estado-finalizado) !important; }
+
+.estado-abierto    .stat-value { color: var(--estado-abierto);    }
+.estado-proceso    .stat-value { color: var(--estado-proceso);    }
+.estado-finalizado .stat-value { color: var(--estado-finalizado); }
+.estado-cerrado    .stat-value { color: var(--estado-finalizado); }
+
+.estado-abierto    .stat-icon i { color: var(--estado-abierto);    }
+.estado-proceso    .stat-icon i { color: var(--estado-proceso);    }
+.estado-finalizado .stat-icon i { color: var(--estado-finalizado); }
+.estado-cerrado    .stat-icon i { color: var(--estado-finalizado); }
+
+/* KPI cards (dashboard) */
+.kpi-card.estado-abierto::before    { background: var(--estado-abierto);    }
+.kpi-card.estado-proceso::before    { background: var(--estado-proceso);    }
+.kpi-card.estado-finalizado::before { background: var(--estado-finalizado); }
+.kpi-card.estado-cerrado::before    { background: var(--estado-finalizado); }
+
+.kpi-card.estado-abierto    .kpi-icon { color: var(--estado-abierto);    }
+.kpi-card.estado-proceso    .kpi-icon { color: var(--estado-proceso);    }
+.kpi-card.estado-finalizado .kpi-icon { color: var(--estado-finalizado); }
+.kpi-card.estado-cerrado    .kpi-icon { color: var(--estado-finalizado); }
+
+/* ── Modal ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28,39,64,.35);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn .18s ease;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp .2s ease;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.modal-body { padding: 24px; }
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-alt);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+/* ── Toast ──────────────────────────────────────────────── */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+}
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; border-radius: var(--radius-md);
+  font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-md);
+  animation: slideIn .25s ease;
+  cursor: pointer;
+}
+.toast-success { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success); }
+.toast-error   { background: var(--danger-bg);  border: 1px solid var(--danger-border);  color: var(--danger);  }
+@keyframes slideIn { from { transform: translateX(16px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+
+/* ── Empty state ────────────────────────────────────────── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 56px 20px; text-align: center;
+}
+.empty-state .empty-icon {
+  font-size: 36px; color: var(--border-strong);
+  margin-bottom: 16px; line-height: 1;
+}
+.empty-state h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.empty-state p  { font-size: 13px; color: var(--text-muted); }
+
+/* ── Spinner ────────────────────────────────────────────── */
+.spinner {
+  width: 28px; height: 28px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .65s linear infinite;
+}
+.spinner-sm {
+  display: inline-block;
+  width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .65s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg) } }

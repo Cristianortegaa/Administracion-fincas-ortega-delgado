@@ -1,0 +1,191 @@
+<div class="page-content">
+
+  <!-- ── Cabecera ─────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <i class="fa-solid fa-triangle-exclamation"></i> Siniestros &amp; Incidencias
+      </h1>
+      <p class="page-subtitle">Gestión de siniestros de seguros 2026</p>
+    </div>
+    <button class="btn btn-primary" (click)="openNew()">
+      <i class="fa-solid fa-plus"></i> Nuevo Siniestro
+    </button>
+  </div>
+
+  <!-- ── Stats ─────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+      <div>
+        <p class="stat-value">{{ siniestros().length }}</p>
+        <p class="stat-label">Total</p>
+      </div>
+    </div>
+    <div class="stat-card estado-abierto">
+      <span class="stat-icon"><i class="fa-solid fa-circle-dot"></i></span>
+      <div>
+        <p class="stat-value">{{ totalAbiertos }}</p>
+        <p class="stat-label">Abiertos</p>
+      </div>
+    </div>
+    <div class="stat-card estado-proceso">
+      <span class="stat-icon"><i class="fa-solid fa-arrows-rotate"></i></span>
+      <div>
+        <p class="stat-value">{{ totalEnProceso }}</p>
+        <p class="stat-label">En Proceso</p>
+      </div>
+    </div>
+    <div class="stat-card estado-finalizado">
+      <span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span>
+      <div>
+        <p class="stat-value">{{ totalFinalizados }}</p>
+        <p class="stat-label">Finalizados</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filtros ───────────────────────────────────────── -->
+  <div class="filters-bar card">
+    <div class="search-wrap">
+      <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input
+        type="text"
+        placeholder="Buscar por CDAD, comunidad, referencia, detalles..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        class="search-input"
+      />
+    </div>
+
+    <div class="filters-right">
+      <select [(ngModel)]="filter.estado" (ngModelChange)="onFilterChange()" class="filter-select">
+        <option value="">Todos los estados</option>
+        @for (e of estados; track e.value) {
+          <option [value]="e.value">{{ e.label }}</option>
+        }
+      </select>
+
+      @if (comunidades().length > 0) {
+        <select [(ngModel)]="filter.comunidad" (ngModelChange)="onFilterChange()" class="filter-select">
+          <option value="">Todas las comunidades</option>
+          @for (c of comunidades(); track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      }
+
+      @if (comunidades().length > 0 || filter.estado || searchText) {
+        <button class="btn btn-ghost btn-sm" (click)="clearFilters()" title="Limpiar filtros">
+          <i class="fa-solid fa-xmark"></i> Limpiar
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Tabla ─────────────────────────────────────────── -->
+  <div class="table-card card">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando siniestros...</p>
+      </div>
+    } @else if (siniestros().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
+        <h3>No hay siniestros registrados</h3>
+        <p>Crea el primer siniestro pulsando el botón superior</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>N.º CDAD</th>
+              <th>Comunidad</th>
+              <th>Ubicación</th>
+              <th>Compañía</th>
+              <th>Referencia</th>
+              <th>Reparador</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of siniestros(); track s.id) {
+              <tr (click)="openDetail(s)" class="table-row">
+                <td class="date-cell">{{ s.fechaSiniestro | date:'dd/MM/yy' }}</td>
+                <td class="cda-cell">{{ s.numeroCDA || '—' }}</td>
+                <td class="comunidad-cell">{{ s.comunidad }}</td>
+                <td class="ubicacion-cell">{{ s.ubicacionDanio || '—' }}</td>
+                <td>{{ s.companiaSeguros || '—' }}</td>
+                <td class="ref-cell">{{ s.referenciaSiniestro || '—' }}</td>
+                <td class="reparador-cell">{{ s.reparador || '—' }}</td>
+                <td>
+                  <app-status-badge [estado]="s.estado" />
+                </td>
+                <td class="actions-cell" (click)="$event.stopPropagation()">
+                  <button
+                    class="btn btn-ghost btn-sm btn-icon"
+                    (click)="openEdit(s)"
+                    title="Editar"
+                  ><i class="fa-solid fa-pen"></i></button>
+                  <button
+                    class="btn btn-ghost btn-sm btn-icon btn-delete"
+                    (click)="confirmDelete(s, $event)"
+                    [disabled]="deleting() === s.id"
+                    title="Eliminar"
+                  ><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        {{ siniestros().length }} siniestro{{ siniestros().length !== 1 ? 's' : '' }} encontrado{{ siniestros().length !== 1 ? 's' : '' }}
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Toast container ─────────────────────────────── -->
+<div class="toast-container">
+  @for (t of toastService.toasts(); track t.id) {
+    <div class="toast" [class]="'toast-' + t.type" (click)="toastService.remove(t.id)">
+      <i [class]="t.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"></i>
+      {{ t.message }}
+    </div>
+  }
+</div>
+
+<!-- ── Modal Formulario ─────────────────────────────── -->
+@if (showForm()) {
+  <app-siniestro-form
+    [siniestro]="selected()"
+    (saved)="onSaved($event)"
+    (closed)="closeForm()"
+  />
+}
+
+<!-- ── Modal Detalle ────────────────────────────────── -->
+@if (showDetail() && selected()) {
+  <app-siniestro-detail
+    [siniestro]="selected()!"
+    (closed)="closeDetail()"
+    (editRequested)="openEdit($event)"
+  />
+}
+
+<!-- ── Confirmar borrado ──────────────────────────── -->
+@if (pendingDelete()) {
+  <app-confirm-modal
+    [title]="'Eliminar siniestro'"
+    [detail]="'Siniestro #' + pendingDelete()!.id + ' — ' + pendingDelete()!.comunidad"
+    [loading]="deleting() !== null"
+    (confirmed)="doDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

@@ -1,0 +1,102 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal modal-wide" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="detail-title">
+        <h2>Siniestro #{{ siniestro.id }}</h2>
+        <app-status-badge [estado]="siniestro.estado" />
+      </div>
+      <button class="btn btn-ghost btn-icon" type="button" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-grid">
+
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-clipboard-list"></i> Información General
+          </h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Fecha Siniestro</span>
+              <span class="info-value">{{ siniestro.fechaSiniestro | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">N.º CDAD</span>
+              <span class="info-value">{{ siniestro.numeroCDA || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Comunidad</span>
+              <span class="info-value highlight">{{ siniestro.comunidad }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Ubicación del Daño</span>
+              <span class="info-value">{{ siniestro.ubicacionDanio || '—' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-building-shield"></i> Seguro
+          </h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Compañía de Seguros</span>
+              <span class="info-value">{{ siniestro.companiaSeguros || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Teléfono Compañía</span>
+              <span class="info-value">{{ siniestro.telefonoCompania || '—' }}</span>
+            </div>
+            <div class="info-item col-2">
+              <span class="info-label">Referencia Siniestro</span>
+              <span class="info-value highlight-blue">{{ siniestro.referenciaSiniestro || '—' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-wrench"></i> Reparador
+          </h3>
+          <p class="info-value">{{ siniestro.reparador || 'No asignado' }}</p>
+        </div>
+
+        <div class="detail-section col-span-2">
+          <h3 class="section-title">
+            <i class="fa-solid fa-file-lines"></i> Detalles del Siniestro
+          </h3>
+          <app-descripciones
+            [entradas]="siniestro.detallesSiniestro"
+            emptyText="Sin detalles registrados."
+          />
+        </div>
+
+        <div class="detail-section meta-section">
+          <span class="meta">
+            <i class="fa-solid fa-calendar-plus"></i>
+            Creado: {{ siniestro.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+          <span class="meta">
+            <i class="fa-solid fa-calendar-check"></i>
+            Modificado: {{ siniestro.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="close()">
+        <i class="fa-solid fa-xmark"></i> Cerrar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="edit()">
+        <i class="fa-solid fa-pen"></i> Editar
+      </button>
+    </div>
+
+  </div>
+</div>

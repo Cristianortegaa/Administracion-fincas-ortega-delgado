@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ortega Delgado | Administrador de Fincas</title>
+  <style>
+    :root {
+      --bg: #050b1a;
+      --bg2: #0d1631;
+      --bg3: #141d38;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --primary: #6366f1;
+      --secondary: #06b6d4;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --glow: rgba(99,102,241,0.3);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+    /* ── NAVBAR ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:1000;
+      padding:0 2.5rem; height:70px;
+      display:flex; align-items:center; justify-content:space-between;
+      background:rgba(5,11,26,0.7); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border); transition:all .3s;
+    }
+    nav.scrolled { background:rgba(5,11,26,0.95); box-shadow:0 4px 30px rgba(0,0,0,.5); }
+    .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .logo-icon { width:40px; height:40px; background:linear-gradient(135deg,var(--primary),var(--secondary)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+    .logo-text { font-size:1.05rem; font-weight:700; color:#fff; }
+    .logo-sub { font-size:.65rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+    .nav-links { display:flex; align-items:center; gap:2rem; list-style:none; }
+    .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; transition:color .2s; }
+    .nav-links a:hover { color:#fff; }
+    .btn-dash {
+      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      color:#fff; border:none; padding:.6rem 1.4rem; border-radius:8px;
+      font-size:.85rem; font-weight:600; cursor:pointer;
+      box-shadow:0 0 20px var(--glow); transition:all .3s;
+    }
+    .btn-dash:hover { transform:translateY(-2px); box-shadow:0 0 35px var(--glow); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      text-align:center; padding:7rem 2rem 5rem; position:relative; overflow:hidden;
+    }
+    .hero-bg {
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at 20% 50%,rgba(99,102,241,.18) 0%,transparent 60%),
+        radial-gradient(ellipse at 80% 20%,rgba(6,182,212,.12) 0%,transparent 50%),
+        radial-gradient(ellipse at 55% 85%,rgba(16,185,129,.08) 0%,transparent 50%);
+    }
+    .hero-grid {
+      position:absolute; inset:0;
+      background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+      background-size:60px 60px;
+    }
+    .hero-content { position:relative; z-index:1; max-width:960px; }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:7px;
+      background:rgba(99,102,241,.12); border:1px solid rgba(99,102,241,.3);
+      border-radius:20px; padding:.4rem 1.1rem; font-size:.8rem;
+      color:#a5b4fc; margin-bottom:1.8rem; letter-spacing:.05em;
+    }
+    .hero-badge .dot { width:6px; height:6px; background:var(--accent); border-radius:50%; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+    h1.hero-title {
+      font-size:clamp(2.4rem,6vw,5rem); font-weight:900; line-height:1.08; margin-bottom:1.5rem;
+      background:linear-gradient(135deg,#fff 0%,#a5b4fc 50%,#67e8f9 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-desc { font-size:1.15rem; color:var(--muted); max-width:620px; margin:0 auto 2.5rem; line-height:1.75; }
+    .hero-cta { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+    .btn-primary {
+      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      color:#fff; border:none; padding:.85rem 2rem; border-radius:10px;
+      font-size:1rem; font-weight:600; cursor:pointer; text-decoration:none;
+      display:inline-flex; align-items:center; gap:.5rem;
+      box-shadow:0 0 30px var(--glow); transition:all .3s;
+    }
+    .btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 40px var(--glow); }
+    .btn-outline {
+      background:rgba(255,255,255,.05); color:#fff;
+      border:1px solid var(--border); padding:.85rem 2rem; border-radius:10px;
+      font-size:1rem; font-weight:600; cursor:pointer; text-decoration:none;
+      display:inline-flex; align-items:center; gap:.5rem;
+      backdrop-filter:blur(10px); transition:all .3s;
+    }
+    .btn-outline:hover { border-color:var(--primary); background:rgba(99,102,241,.1); transform:translateY(-2px); }
+    .hero-stats { display:flex; justify-content:center; gap:3.5rem; margin-top:4rem; padding-top:3rem; border-top:1px solid var(--border); flex-wrap:wrap; }
+    .hero-stat-num {
+      font-size:2.2rem; font-weight:900;
+      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-stat-label { font-size:.85rem; color:var(--muted); margin-top:.3rem; }
+    .particle { position:absolute; border-radius:50%; pointer-events:none; animation:float 7s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0) rotate(0deg);opacity:.6} 50%{transform:translateY(-35px) rotate(180deg);opacity:.2} }
+
+    /* ── SECTIONS ── */
+    section { padding:6rem 2rem; }
+    .container { max-width:1200px; margin:0 auto; }
+    .section-header { text-align:center; margin-bottom:4rem; }
+    .section-tag {
+      display:inline-block; background:rgba(99,102,241,.13); color:#a5b4fc;
+      border:1px solid rgba(99,102,241,.3); padding:.3rem 1rem; border-radius:20px;
+      font-size:.73rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:1rem;
+    }
+    .section-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#fff; margin-bottom:1rem; }
+    .section-desc { color:var(--muted); font-size:1.05rem; max-width:520px; margin:0 auto; line-height:1.7; }
+
+    /* ── SERVICES ── */
+    #servicios { background:var(--bg2); }
+    .services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.5rem; }
+    .service-card {
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
+      padding:2rem; transition:all .3s; position:relative; overflow:hidden;
+    }
+    .service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--primary),var(--secondary)); opacity:0; transition:opacity .3s; }
+    .service-card:hover { border-color:rgba(99,102,241,.4); transform:translateY(-5px); box-shadow:0 20px 45px rgba(0,0,0,.35); }
+    .service-card:hover::before { opacity:1; }
+    .service-icon { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:1.2rem; }
+    .service-card h3 { font-size:1.05rem; font-weight:700; margin-bottom:.7rem; color:#fff; }
+    .service-card p { color:var(--muted); font-size:.9rem; line-height:1.65; }
+
+    /* ── STATS ── */
+    #estadisticas { background:var(--bg); }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:2rem; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; position:relative; overflow:hidden; }
+    .stat-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; }
+    .stat-card.c1::after { background:linear-gradient(90deg,var(--primary),var(--secondary)); }
+    .stat-card.c2::after { background:linear-gradient(90deg,var(--accent),var(--secondary)); }
+    .stat-card.c3::after { background:linear-gradient(90deg,var(--warning),#f87171); }
+    .stat-card.c4::after { background:linear-gradient(90deg,#c084fc,var(--primary)); }
+    .stat-num { font-size:3rem; font-weight:900; color:#fff; line-height:1; margin-bottom:.5rem; }
+    .stat-label { color:var(--muted); font-size:.9rem; }
+    .progress-bar { height:5px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; margin-top:1rem; }
+    .progress-fill { height:100%; border-radius:3px; }
+
+    /* ── COMUNIDADES ── */
+    #comunidades { background:var(--bg2); }
+    .comunidades-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; }
+    .comunidad-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; display:flex; gap:1rem; align-items:flex-start; transition:all .3s; }
+    .comunidad-card:hover { border-color:rgba(99,102,241,.4); transform:translateY(-3px); }
+    .com-icon { width:48px; height:48px; min-width:48px; border-radius:10px; background:linear-gradient(135deg,var(--primary),var(--secondary)); display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .com-info h4 { font-size:1rem; font-weight:700; color:#fff; margin-bottom:.3rem; }
+    .com-info p { font-size:.85rem; color:var(--muted); }
+    .com-badge { margin-top:.5rem; display:inline-block; background:rgba(16,185,129,.14); color:#34d399; border:1px solid rgba(16,185,129,.3); border-radius:6px; padding:.2rem .6rem; font-size:.73rem; }
+
+    /* ── CONTACT ── */
+    #contacto { background:var(--bg); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:start; }
+    @media(max-width:768px){ .contact-grid{grid-template-columns:1fr} .nav-links{display:none} }
+    .contact-info h3 { font-size:1.5rem; font-weight:700; color:#fff; margin-bottom:1rem; }
+    .contact-info p { color:var(--muted); line-height:1.75; margin-bottom:2rem; }
+    .contact-item { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+    .contact-icon { width:44px; height:44px; background:rgba(99,102,241,.13); border:1px solid rgba(99,102,241,.3); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+    .contact-item strong { display:block; color:#fff; font-size:.9rem; }
+    .contact-item span { color:var(--muted); font-size:.85rem; }
+    .contact-form { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; }
+    .form-group { margin-bottom:1.2rem; }
+    .form-group label { display:block; font-size:.83rem; color:var(--muted); margin-bottom:.45rem; }
+    .form-group input,.form-group textarea,.form-group select {
+      width:100%; background:rgba(255,255,255,.05); border:1px solid var(--border);
+      border-radius:8px; padding:.72rem 1rem; color:#fff; font-size:.95rem;
+      outline:none; transition:border-color .2s;
+    }
+    .form-group input:focus,.form-group textarea:focus { border-color:var(--primary); }
+    .form-group textarea { height:100px; resize:vertical; }
+
+    /* ── FOOTER ── */
+    footer { background:var(--bg2); border-top:1px solid var(--border); padding:2rem; text-align:center; color:var(--muted); font-size:.85rem; }
+
+    /* ══════════════════════════════
+       DASHBOARD
+    ══════════════════════════════ */
+    #dashboard { display:none; position:fixed; inset:0; z-index:2000; background:var(--bg); flex-direction:row; }
+    #dashboard.active { display:flex; }
+
+    /* Sidebar */
+    .sidebar { width:255px; min-width:255px; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; }
+    .sidebar-header { padding:1.4rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .sidebar-logo { width:36px; height:36px; background:linear-gradient(135deg,var(--primary),var(--secondary)); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; }
+    .sidebar-title { font-weight:700; font-size:.9rem; color:#fff; }
+    .sidebar-sub { font-size:.67rem; color:var(--muted); }
+    .sidebar-nav { flex:1; padding:1rem; overflow-y:auto; }
+    .nav-sec { font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; padding:.4rem .5rem; margin-top:1rem; }
+    .slink {
+      display:flex; align-items:center; gap:.75rem; padding:.72rem 1rem; border-radius:8px;
+      color:var(--muted); cursor:pointer; transition:all .2s; margin-bottom:2px;
+      border:1px solid transparent; background:none; width:100%; font-size:.88rem; text-align:left;
+    }
+    .slink:hover { background:rgba(99,102,241,.1); color:#fff; }
+    .slink.active { background:rgba(99,102,241,.18); color:#fff; border-color:rgba(99,102,241,.3); }
+    .slink .icon { font-size:.95rem; width:20px; text-align:center; }
+    .sbadge { margin-left:auto; background:var(--warning); color:#111; border-radius:4px; padding:.1rem .5rem; font-size:.68rem; font-weight:700; }
+    .sbadge.red { background:var(--danger); color:#fff; }
+    .sidebar-foot { padding:1rem; border-top:1px solid var(--border); }
+    .btn-exit { display:flex; align-items:center; gap:.5rem; padding:.6rem 1rem; border-radius:8px; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:#f87171; cursor:pointer; font-size:.85rem; width:100%; transition:all .2s; }
+    .btn-exit:hover { background:rgba(239,68,68,.2); }
+
+    /* Topbar */
+    .dash-main { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+    .dash-topbar { padding:1rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:rgba(5,11,26,.6); backdrop-filter:blur(12px); position:sticky; top:0; z-index:10; }
+    .dash-topbar h2 { font-size:1.15rem; font-weight:700; color:#fff; }
+    .dash-topbar-r { display:flex; align-items:center; gap:.8rem; }
+    .year-sel { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:.4rem 1rem; color:#fff; font-size:.85rem; cursor:pointer; outline:none; }
+    .btn-sm-icon { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:.4rem .75rem; color:var(--muted); cursor:pointer; font-size:.85rem; transition:all .2s; }
+    .btn-sm-icon:hover { color:#fff; border-color:rgba(99,102,241,.4); }
+
+    /* Content */
+    .dash-content { padding:2rem; flex:1; }
+    .dash-panel { display:none; }
+    .dash-panel.active { display:block; animation:fadeUp .35s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    /* KPIs */
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1rem; margin-bottom:2rem; }
+    .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; transition:all .3s; position:relative; overflow:hidden; }
+    .kpi-card:hover { transform:translateY(-2px); border-color:rgba(99,102,241,.3); }
+    .kpi-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:50%; opacity:.08; transform:translate(20px,-20px); }
+    .kpi-card.k1::before{background:var(--primary)} .kpi-card.k2::before{background:var(--warning)} .kpi-card.k3::before{background:var(--danger)} .kpi-card.k4::before{background:var(--accent)}
+    .kpi-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+    .kpi-label { font-size:.83rem; color:var(--muted); }
+    .kpi-icon { font-size:1.3rem; }
+    .kpi-value { font-size:2.3rem; font-weight:900; color:#fff; line-height:1; }
+    .kpi-sub { font-size:.73rem; color:var(--muted); margin-top:.4rem; }
+    .kpi-trend { display:inline-flex; align-items:center; gap:4px; font-size:.72rem; padding:.2rem .5rem; border-radius:4px; margin-top:.5rem; }
+    .trend-up{background:rgba(16,185,129,.13);color:#34d399} .trend-warn{background:rgba(245,158,11,.13);color:#fbbf24}
+
+    /* Charts */
+    .charts-grid { display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; margin-bottom:2rem; }
+    .charts-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem; }
+    @media(max-width:900px){ .charts-grid,.charts-grid-2{grid-template-columns:1fr} }
+    .chart-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+    .chart-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; }
+    .chart-title { font-size:.97rem; font-weight:700; color:#fff; }
+    .chart-sub { font-size:.73rem; color:var(--muted); margin-top:2px; }
+
+    /* Table */
+    .table-toolbar { display:flex; gap:.8rem; margin-bottom:1.2rem; flex-wrap:wrap; align-items:center; }
+    .search-box { flex:1; min-width:200px; position:relative; }
+    .search-box input { width:100%; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:.65rem 1rem .65rem 2.4rem; color:#fff; font-size:.9rem; outline:none; transition:border-color .2s; }
+    .search-box input:focus { border-color:var(--primary); }
+    .search-box::before { content:'🔍'; position:absolute; left:.75rem; top:50%; transform:translateY(-50%); font-size:.8rem; }
+    .filter-btn { padding:.62rem 1.1rem; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-size:.83rem; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .filter-btn:hover { background:rgba(99,102,241,.1); color:#fff; }
+    .filter-btn.fa { border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.1); color:#fbbf24; }
+    .filter-btn.fp { border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); color:#f87171; }
+    .filter-btn.ff { border-color:rgba(16,185,129,.4); background:rgba(16,185,129,.1); color:#34d399; }
+    .table-count { font-size:.78rem; color:var(--muted); margin-bottom:1rem; }
+    .table-count b { color:#fff; }
+    .table-wrap { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:700px; }
+    thead { background:rgba(255,255,255,.04); border-bottom:1px solid var(--border); }
+    th { padding:.9rem 1rem; text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; }
+    td { padding:.9rem 1rem; font-size:.84rem; color:var(--text); border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(255,255,255,.025); }
+    .estado-badge { display:inline-flex; align-items:center; gap:4px; padding:.28rem .7rem; border-radius:6px; font-size:.73rem; font-weight:600; white-space:nowrap; }
+    .eA { background:rgba(245,158,11,.14); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+    .eP { background:rgba(239,68,68,.14); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+    .eF { background:rgba(16,185,129,.14); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+    .eV { background:rgba(16,185,129,.14); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+    .eR { background:rgba(245,158,11,.14); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+    .trunc { max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted); font-size:.78rem; }
+    .btn-xs { padding:.28rem .65rem; border-radius:6px; border:1px solid var(--border); background:rgba(255,255,255,.04); color:var(--muted); cursor:pointer; font-size:.73rem; transition:all .2s; }
+    .btn-xs:hover { background:rgba(99,102,241,.15); border-color:rgba(99,102,241,.4); color:#fff; }
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.82); z-index:3000; align-items:center; justify-content:center; padding:2rem; backdrop-filter:blur(6px); }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:2rem; max-width:680px; width:100%; max-height:80vh; overflow-y:auto; animation:fadeUp .3s ease; }
+    .modal-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; }
+    .modal-header h3 { font-size:1.05rem; font-weight:700; color:#fff; }
+    .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; padding:.2rem; }
+    .modal-close:hover { color:#fff; }
+    .modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+    .mfield label { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:.35rem; }
+    .mfield p { color:var(--text); font-size:.92rem; line-height:1.6; background:rgba(255,255,255,.04); border-radius:8px; padding:.7rem 1rem; border:1px solid var(--border); }
+    .mfield.full { grid-column:1/-1; }
+
+    /* Comunidades panel */
+    .com-panel-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; }
+    .com-panel-card { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all .3s; }
+    .com-panel-card:hover { border-color:rgba(99,102,241,.4); transform:translateY(-3px); }
+    .com-panel-head { padding:1.2rem 1.5rem; background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(6,182,212,.1)); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.9rem; }
+    .com-panel-ico { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+    .com-panel-head h4 { font-weight:700; color:#fff; font-size:.93rem; }
+    .com-panel-head span { font-size:.73rem; color:var(--muted); }
+    .com-panel-body { padding:1.1rem 1.5rem; }
+    .cstat { display:flex; justify-content:space-between; align-items:center; padding:.45rem 0; border-bottom:1px solid rgba(255,255,255,.04); font-size:.83rem; }
+    .cstat:last-child { border-bottom:none; }
+    .cstat span:first-child { color:var(--muted); }
+    .cstat span:last-child { color:#fff; font-weight:600; }
+
+    /* Informes */
+    .informes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.5rem; margin-bottom:2rem; }
+    .informe-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; transition:all .3s; cursor:pointer; }
+    .informe-card:hover { border-color:rgba(99,102,241,.4); transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,.3); }
+    .informe-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:1rem; }
+    .informe-card h4 { font-size:.97rem; font-weight:700; color:#fff; margin-bottom:.45rem; }
+    .informe-card p { font-size:.83rem; color:var(--muted); line-height:1.5; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- ════════════ LANDING ════════════ -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="logo-icon">🏢</div>
+    <div><div class="logo-text">Ortega Delgado</div><div class="logo-sub">Administrador de Fincas</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#comunidades">Comunidades</a></li>
+    <li><a href="#estadisticas">Experiencia</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <button class="btn-dash" onclick="openDash()">🖥️ Panel de Gestión</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="particle" style="width:5px;height:5px;background:#6366f1;top:18%;left:12%;animation-delay:0s;animation-duration:8s"></div>
+  <div class="particle" style="width:4px;height:4px;background:#06b6d4;top:65%;left:88%;animation-delay:2s;animation-duration:6s"></div>
+  <div class="particle" style="width:3px;height:3px;background:#10b981;top:38%;left:75%;animation-delay:4s;animation-duration:9s"></div>
+  <div class="particle" style="width:6px;height:6px;background:#f59e0b;top:78%;left:20%;animation-delay:1s;animation-duration:7s"></div>
+  <div class="particle" style="width:4px;height:4px;background:#c084fc;top:25%;left:55%;animation-delay:3s;animation-duration:10s"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span>Administración Profesional de Comunidades · Madrid</div>
+    <h1 class="hero-title">Gestión de Fincas<br>del Siglo XXI</h1>
+    <p class="hero-desc">Administramos tu comunidad con transparencia, tecnología y más de 25 años de experiencia. Siniestros, contabilidad, mantenimiento — todo bajo control.</p>
+    <div class="hero-cta">
+      <a href="#contacto" class="btn-primary">✉️ Solicitar Presupuesto</a>
+      <a href="#servicios" class="btn-outline">📋 Nuestros Servicios</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num" data-count="127" data-suffix="+">0</div><div class="hero-stat-label">Comunidades Activas</div></div>
+      <div><div class="hero-stat-num" data-count="25" data-suffix=" años">0</div><div class="hero-stat-label">Años de Experiencia</div></div>
+      <div><div class="hero-stat-num" data-count="4800" data-suffix="+">0</div><div class="hero-stat-label">Propietarios Gestionados</div></div>
+      <div><div class="hero-stat-num" data-count="98" data-suffix="%">0</div><div class="hero-stat-label">% Satisfacción</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">✦ Lo que hacemos</div>
+      <h2 class="section-title">Servicios Integrales de Administración</h2>
+      <p class="section-desc">Todo lo que tu comunidad necesita, gestionado con rigor y tecnología moderna</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon" style="background:rgba(99,102,241,.14)">🛡️</div>
+        <h3>Gestión de Siniestros</h3>
+        <p>Tramitamos todos los partes con las compañías aseguradoras. Seguimiento completo desde la apertura hasta la resolución final con reparadores de confianza.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:rgba(6,182,212,.14)">💼</div>
+        <h3>Administración Financiera</h3>
+        <p>Gestión de cuentas corrientes, cuotas, derramas y morosidad. Contabilidad transparente con informes periódicos para todos los propietarios.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:rgba(16,185,129,.14)">🔧</div>
+        <h3>Mantenimiento Preventivo</h3>
+        <p>Coordinación de empresas de mantenimiento para ascensores, instalaciones y zonas comunes para el óptimo estado del edificio en todo momento.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:rgba(245,158,11,.14)">⚖️</div>
+        <h3>Asesoría Jurídica</h3>
+        <p>Gestión de conflictos, redacción de actas, convocatorias y representación en juntas. Siempre conforme a la Ley de Propiedad Horizontal.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:rgba(192,132,252,.14)">📊</div>
+        <h3>Informes y Transparencia</h3>
+        <p>Informes mensuales detallados, acceso a toda la documentación y comunicación directa con el administrador. La comunidad siempre informada.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon" style="background:rgba(251,113,133,.14)">🏗️</div>
+        <h3>Obras y Reformas</h3>
+        <p>Gestión de presupuestos, supervisión de obras en zonas comunes y coordinación con arquitectos para reformas de cualquier envergadura.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESTADÍSTICAS -->
+<section id="estadisticas">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">✦ Nuestra trayectoria</div>
+      <h2 class="section-title">Números que Hablan por Sí Solos</h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card c1"><div class="stat-num">127</div><div class="stat-label">Comunidades Activas</div><div class="progress-bar"><div class="progress-fill" style="width:85%;background:linear-gradient(90deg,#6366f1,#06b6d4)"></div></div></div>
+      <div class="stat-card c2"><div class="stat-num">4.800</div><div class="stat-label">Propietarios Gestionados</div><div class="progress-bar"><div class="progress-fill" style="width:92%;background:linear-gradient(90deg,#10b981,#06b6d4)"></div></div></div>
+      <div class="stat-card c3"><div class="stat-num">312</div><div class="stat-label">Siniestros Resueltos / Año</div><div class="progress-bar"><div class="progress-fill" style="width:70%;background:linear-gradient(90deg,#f59e0b,#f87171)"></div></div></div>
+      <div class="stat-card c4"><div class="stat-num">98%</div><div class="stat-label">Tasa de Satisfacción</div><div class="progress-bar"><div class="progress-fill" style="width:98%;background:linear-gradient(90deg,#c084fc,#6366f1)"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMUNIDADES -->
+<section id="comunidades">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">✦ Nuestras fincas</div>
+      <h2 class="section-title">Comunidades que Administramos</h2>
+      <p class="section-desc">Una selección de las comunidades gestionadas actualmente en Madrid</p>
+    </div>
+    <div class="comunidades-grid">
+      <div class="comunidad-card"><div class="com-icon">🏢</div><div class="com-info"><h4>C/ Rioja, 17</h4><p>Madrid · CDA 105 · 48 vecinos</p><span class="com-badge">✓ Activo</span></div></div>
+      <div class="comunidad-card"><div class="com-icon">🏬</div><div class="com-info"><h4>Av. Madrid, 45</h4><p>Madrid · CDA 101 · 62 vecinos</p><span class="com-badge">✓ Activo</span></div></div>
+      <div class="comunidad-card"><div class="com-icon">🏛️</div><div class="com-info"><h4>C/ Serrano, 12</h4><p>Madrid · CDA 102 · 34 vecinos</p><span class="com-badge">✓ Activo</span></div></div>
+      <div class="comunidad-card"><div class="com-icon">🏗️</div><div class="com-info"><h4>Plaza Mayor, 3</h4><p>Madrid · CDA 103 · 26 vecinos</p><span class="com-badge">✓ Activo</span></div></div>
+      <div class="comunidad-card"><div class="com-icon">🏠</div><div class="com-info"><h4>C/ Gran Vía, 88</h4><p>Madrid · CDA 104 · 51 vecinos</p><span class="com-badge">✓ Activo</span></div></div>
+      <div class="comunidad-card"><div class="com-icon">🌆</div><div class="com-info"><h4>C/ Alcalá, 210</h4><p>Madrid · CDA 106 · 40 vecinos</p><span class="com-badge">✓ Activo</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">✦ Habla con nosotros</div>
+      <h2 class="section-title">Contacta con tu Administrador</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Ortega Delgado<br>Administrador de Fincas</h3>
+        <p>Colegiado en el Colegio Oficial de Administradores de Fincas de Madrid. Atención personalizada y respuesta garantizada en menos de 24 horas.</p>
+        <div class="contact-item"><div class="contact-icon">📞</div><div><strong>Teléfono</strong><span>91 XXX XX XX</span></div></div>
+        <div class="contact-item"><div class="contact-icon">✉️</div><div><strong>Email</strong><span>info@ortegadelgado.es</span></div></div>
+        <div class="contact-item"><div class="contact-icon">📍</div><div><strong>Oficina</strong><span>Madrid, España</span></div></div>
+        <div class="contact-item"><div class="contact-icon">🕐</div><div><strong>Horario</strong><span>Lun–Vie: 9:00 – 19:00</span></div></div>
+      </div>
+      <div class="contact-form">
+        <div class="form-group"><label>Nombre completo</label><input type="text" placeholder="Tu nombre y apellidos"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="tu@email.com"></div>
+        <div class="form-group"><label>Comunidad / Asunto</label><input type="text" placeholder="¿De qué se trata?"></div>
+        <div class="form-group"><label>Mensaje</label><textarea placeholder="Cuéntanos tu consulta..."></textarea></div>
+        <button class="btn-primary" style="width:100%;justify-content:center">✉️ Enviar Mensaje</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Ortega Delgado · Administrador de Fincas Colegiado · Madrid</p>
+  <p style="margin-top:.5rem;font-size:.75rem;opacity:.6">Colegio Oficial de Administradores de Fincas de Madrid · COAF</p>
+</footer>
+
+
+<!-- ════════════ DASHBOARD ════════════ -->
+<div id="dashboard">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">🏢</div>
+      <div><div class="sidebar-title">Ortega Delgado</div><div class="sidebar-sub">Panel de Gestión</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-sec">Principal</div>
+      <button class="slink active" onclick="showPanel('overview',this)"><span class="icon">📊</span>Resumen</button>
+      <div class="nav-sec">Gestión</div>
+      <button class="slink" onclick="showPanel('siniestros',this)"><span class="icon">🛡️</span>Siniestros<span class="sbadge" id="badge-pend">5</span></button>
+      <button class="slink" onclick="showPanel('comunidades',this)"><span class="icon">🏘️</span>Comunidades</button>
+      <button class="slink" onclick="showPanel('informes',this)"><span class="icon">📄</span>Informes</button>
+      <div class="nav-sec">Seguros</div>
+      <button class="slink" onclick="showPanel('polizas',this)"><span class="icon">📋</span>Pólizas</button>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="btn-exit" onclick="closeDash()">✕ Salir del Panel</button>
+    </div>
+  </div>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h2 id="ptitle">Resumen General</h2>
+      <div class="dash-topbar-r">
+        <select class="year-sel" id="ySel" onchange="changeYear(this.value)">
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+        </select>
+        <span class="btn-sm-icon">📅 11/06/2026</span>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- OVERVIEW -->
+      <div class="dash-panel active" id="panel-overview">
+        <div class="kpi-grid">
+          <div class="kpi-card k1">
+            <div class="kpi-top"><span class="kpi-label">Total Siniestros</span><span class="kpi-icon">🛡️</span></div>
+            <div class="kpi-value" id="kv-total">8</div>
+            <div class="kpi-sub">En el año seleccionado</div>
+            <div class="kpi-trend trend-up">▲ Gestionados correctamente</div>
+          </div>
+          <div class="kpi-card k2">
+            <div class="kpi-top"><span class="kpi-label">Abiertos</span><span class="kpi-icon">🔓</span></div>
+            <div class="kpi-value" id="kv-ab">5</div>
+            <div class="kpi-sub">Pendientes de resolución</div>
+            <div class="kpi-trend trend-warn">⚠ Requieren atención</div>
+          </div>
+          <div class="kpi-card k3">
+            <div class="kpi-top"><span class="kpi-label">En Proceso</span><span class="kpi-icon">⚙️</span></div>
+            <div class="kpi-value" id="kv-pr">1</div>
+            <div class="kpi-sub">Reparación en curso</div>
+            <div class="kpi-trend trend-up">🔧 Reformadrid activo</div>
+          </div>
+          <div class="kpi-card k4">
+            <div class="kpi-top"><span class="kpi-label">Finalizados</span><span class="kpi-icon">✅</span></div>
+            <div class="kpi-value" id="kv-fi">2</div>
+            <div class="kpi-sub">Resueltos satisfactoriamente</div>
+            <div class="kpi-trend trend-up">▲ Tasa resolución 25%</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-head">
+              <div><div class="chart-title">Siniestros por Mes</div><div class="chart-sub">Evolución mensual del año seleccionado</div></div>
+            </div>
+            <canvas id="cMes" height="240"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head">
+              <div><div class="chart-title">Por Estado</div><div class="chart-sub">Distribución actual</div></div>
+            </div>
+            <canvas id="cEstado" height="240"></canvas>
+          </div>
+        </div>
+
+        <div class="charts-grid-2">
+          <div class="chart-card">
+            <div class="chart-head"><div><div class="chart-title">Histórico Anual</div><div class="chart-sub">Siniestros 2019–2026</div></div></div>
+            <canvas id="cAnual" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head"><div><div class="chart-title">Por Comunidad</div><div class="chart-sub">Año seleccionado</div></div></div>
+            <canvas id="cCom" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- SINIESTROS -->
+      <div class="dash-panel" id="panel-siniestros">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar por ubicación, referencia, detalles..." oninput="filterTable()">
+          </div>
+          <button class="filter-btn" onclick="setFilter('ALL',this)">Todos</button>
+          <button class="filter-btn" onclick="setFilter('ABIERTO',this)">🟡 Abierto</button>
+          <button class="filter-btn" onclick="setFilter('PROCESO',this)">🔴 En Proceso</button>
+          <button class="filter-btn" onclick="setFilter('FINALIZADO',this)">🟢 Finalizado</button>
+          <button class="btn-primary" onclick="exportCSV()" style="padding:.6rem 1rem;font-size:.83rem;white-space:nowrap">📥 CSV</button>
+          <button class="btn-outline" onclick="printRep()" style="padding:.6rem 1rem;font-size:.83rem;white-space:nowrap">🖨️ Imprimir</button>
+        </div>
+        <div class="table-count">Mostrando <b id="rowCount">8</b> siniestros</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Comunidad</th><th>Ubicación</th><th>Detalles</th>
+                <th>Cía. Seguro</th><th>Referencia</th><th>Reparador</th><th>Estado</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COMUNIDADES -->
+      <div class="dash-panel" id="panel-comunidades">
+        <div class="com-panel-grid" id="comGrid"></div>
+      </div>
+
+      <!-- INFORMES -->
+      <div class="dash-panel" id="panel-informes">
+        <div class="informes-grid">
+          <div class="informe-card" onclick="exportCSV()">
+            <div class="informe-icon" style="background:rgba(16,185,129,.14)">📊</div>
+            <h4>Exportar a CSV / Excel</h4>
+            <p>Descarga todos los siniestros del año seleccionado en formato CSV listo para Excel o LibreOffice.</p>
+          </div>
+          <div class="informe-card" onclick="printRep()">
+            <div class="informe-icon" style="background:rgba(99,102,241,.14)">🖨️</div>
+            <h4>Imprimir Informe Completo</h4>
+            <p>Genera un informe imprimible con todos los siniestros, estados y detalles del año actual.</p>
+          </div>
+          <div class="informe-card" onclick="printResumen()">
+            <div class="informe-icon" style="background:rgba(245,158,11,.14)">📋</div>
+            <h4>Resumen para Junta</h4>
+            <p>Vista ejecutiva con KPIs y estadísticas principales, ideal para presentar en la junta de propietarios.</p>
+          </div>
+          <div class="informe-card" onclick="setFilter('ABIERTO');showPanel('siniestros',null)">
+            <div class="informe-icon" style="background:rgba(239,68,68,.14)">⚠️</div>
+            <h4>Ver Pendientes</h4>
+            <p>Filtra y muestra únicamente los siniestros abiertos o en proceso que necesitan seguimiento.</p>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head"><div><div class="chart-title">Tiempo Medio de Resolución por Compañía</div><div class="chart-sub">Días promedio desde apertura hasta cierre</div></div></div>
+          <canvas id="cResol" height="180"></canvas>
+        </div>
+      </div>
+
+      <!-- PÓLIZAS -->
+      <div class="dash-panel" id="panel-polizas">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Comunidad</th><th>Compañía</th><th>Teléfono</th><th>Nº Póliza</th><th>Vencimiento</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Rioja 17 (CDA 105)</td><td>Ocaso</td><td>91.538.74.90</td><td style="font-family:monospace">OCA-2026-105</td><td>31/12/2026</td><td><span class="estado-badge eV">✓ Vigente</span></td></tr>
+              <tr><td>Av. Madrid 45 (CDA 101)</td><td>Mapfre</td><td>900 100 200</td><td style="font-family:monospace">MAP-2026-101</td><td>31/12/2026</td><td><span class="estado-badge eV">✓ Vigente</span></td></tr>
+              <tr><td>C/ Serrano 12 (CDA 102)</td><td>Allianz</td><td>900 200 300</td><td style="font-family:monospace">ALL-2026-102</td><td>30/06/2026</td><td><span class="estado-badge eR">⚠ Renovar</span></td></tr>
+              <tr><td>Plaza Mayor 3 (CDA 103)</td><td>Generali</td><td>900 300 400</td><td style="font-family:monospace">GEN-2026-103</td><td>31/12/2026</td><td><span class="estado-badge eV">✓ Vigente</span></td></tr>
+              <tr><td>C/ Gran Vía 88 (CDA 104)</td><td>AXA</td><td>900 400 500</td><td style="font-family:monospace">AXA-2026-104</td><td>31/12/2026</td><td><span class="estado-badge eV">✓ Vigente</span></td></tr>
+              <tr><td>C/ Alcalá 210 (CDA 106)</td><td>Zurich</td><td>900 500 600</td><td style="font-family:monospace">ZUR-2026-106</td><td>31/12/2026</td><td><span class="estado-badge eV">✓ Vigente</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /dash-content -->
+  </div><!-- /dash-main -->
+</div><!-- /dashboard -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOv">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="mTitle">Detalle del Siniestro</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="mBody"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ════ DATA ════
+const DB = {
+  2026: [
+    {id:1,fecha:"05/02/2026",cda:"105",com:"Rioja 17",ubi:"7ªF Dcha",det:"Avisa Javier 7ºF Dcha (690.61.74.72) que tiene gotera en el techo de una de las habitaciones de la planta de arriba. El 16-02-2026 se amplía parte con humedad en techo de la terraza y dice que todavía no tiene informe del perito. Se avisa el 16-02-2026 a Reformadrid y a Ejezeta. El 03-03-2026 se reclama presupuesto a Reformadrid. El 09-03-2026 visto que no envía el presupuesto Reformadrid se avisa a Plumber y Jose Luis Arias. El 19-03-2026 el Presidente acepta el presupuesto de Reformadrid para reparar las filtraciones por importe de 5.050,96€. El 20-04-2026 nos dice Dani que empiezan los trabajos el lunes. El 22-04-2026 se manda factura de reparación al seguro para que asignen a los reparadores.",cia:"Ocaso",tlf:"91.538.74.90",ref:"87512/2026",rep:"Seguro Reformadrid Ejezeta",est:"PROCESO"},
+    {id:2,fecha:"13/02/2026",cda:"105",com:"Rioja 17",ubi:"2ºD Izda",det:"Avisa Maximo 2ºD Izda. (675.814.844–91.747.40.66) que tiene humedad en techo de baño. Según el seguro es una avería privativa de la vivienda superior 3ºD Izda.",cia:"Ocaso",tlf:"91.538.74.90",ref:"117859/2026",rep:"Seguro",est:"FINALIZADO"},
+    {id:3,fecha:"07/04/2026",cda:"105",com:"Rioja 17",ubi:"PORTERÍA",det:"Avisa Melquiades 608 80 59 36 que se ha roto el lavabo de la portería.",cia:"Ocaso",tlf:"91.538.74.90",ref:"231681/2026",rep:"",est:"ABIERTO"},
+    {id:4,fecha:"29/04/2026",cda:"105",com:"Rioja 17",ubi:"Plazas 3 y 4",det:"Avisa Marina 633 24 60 95 que hay una gotera encima de sus coches, que al parecer la humedad ya lleva muchos años (5 años) y que han hablado con el portero y al parecer no se da con la fuga.",cia:"Ocaso",tlf:"91.538.74.90",ref:"272815/2026",rep:"",est:"ABIERTO"},
+    {id:5,fecha:"29/04/2026",cda:"105",com:"Rioja 17",ubi:"Garaje",det:"Avisan de que está cayendo agua en la plaza 3. Se deja tlf Melquiades y se manda de urgencia.",cia:"Ocaso",tlf:"91.538.74.90",ref:"272810/2026",rep:"Seguro",est:"ABIERTO"},
+    {id:6,fecha:"29/04/2026",cda:"105",com:"Rioja 17",ubi:"4ª Dcha",det:"Avisan de que cae agua en el rellano de la 4ª planta de la escalera derecha.",cia:"Ocaso",tlf:"91.538.74.90",ref:"272821/2026",rep:"Seguro",est:"ABIERTO"},
+    {id:7,fecha:"11/05/2026",cda:"105",com:"Rioja 17",ubi:"Fachada",det:"Avisan humedad en la fachada a la altura del bajo E Dcha. Melquiades 608 80 59 36.",cia:"Ocaso",tlf:"91.538.74.90",ref:"295524/2026",rep:"",est:"ABIERTO"},
+    {id:8,fecha:"09/06/2026",cda:"105",com:"Rioja 17",ubi:"4ºD Esc Dcha",det:"Avisan Miguel 656 48 03 54 Esc Dcha 4ºD, que tiene humedad en el techo de la cocina colindante con descansillo del ascensor. 11/06/26 Llama Teo (820 08 02 63) perito de ocaso, diciendo que se trata de avería privativa del 5ºD. Aviso a Miguel y me indica que el 5º ya está avisado y que iba a mandar a su seguro privativo.",cia:"Ocaso",tlf:"91.538.74.90",ref:"346851/2026",rep:"Privativo 5ºD",est:"FINALIZADO"},
+  ],
+  2025: [
+    {id:9,fecha:"12/01/2025",cda:"105",com:"Rioja 17",ubi:"3ºB Izda",det:"Gotera en cuarto de baño por fuga en comunidad superior.",cia:"Ocaso",tlf:"91.538.74.90",ref:"12341/2025",rep:"Plumber S.L.",est:"FINALIZADO"},
+    {id:10,fecha:"03/02/2025",cda:"101",com:"Av. Madrid 45",ubi:"Ascensor",det:"Parada de emergencia del ascensor. Avería en motor.",cia:"Mapfre",tlf:"900 100 200",ref:"MAP-5521/2025",rep:"KONE Ascensores",est:"FINALIZADO"},
+    {id:11,fecha:"20/03/2025",cda:"101",com:"Av. Madrid 45",ubi:"Cubierta",det:"Filtración de agua por cubierta plana en rellano 5º. Perito visita la finca.",cia:"Mapfre",tlf:"900 100 200",ref:"MAP-8834/2025",rep:"Reformas Rápidas S.L.",est:"FINALIZADO"},
+    {id:12,fecha:"15/05/2025",cda:"102",com:"C/ Serrano 12",ubi:"Portería",det:"Rotura tubería de calefacción en planta baja.",cia:"Allianz",tlf:"900 200 300",ref:"ALL-2209/2025",rep:"Fontanería Express",est:"FINALIZADO"},
+    {id:13,fecha:"22/07/2025",cda:"105",com:"Rioja 17",ubi:"Fachada lateral",det:"Desprendimiento de revoco en fachada lateral. Se acota la zona de seguridad.",cia:"Ocaso",tlf:"91.538.74.90",ref:"74421/2025",rep:"Obras Comunidad",est:"FINALIZADO"},
+    {id:14,fecha:"18/09/2025",cda:"104",com:"C/ Gran Vía 88",ubi:"1ºA",det:"Inundación por fuga en bajante comunitaria.",cia:"AXA",tlf:"900 400 500",ref:"AXA-6612/2025",rep:"AXA Reparaciones",est:"FINALIZADO"},
+  ],
+  2024: [
+    {id:15,fecha:"08/02/2024",cda:"105",com:"Rioja 17",ubi:"Garaje",det:"Filtración de agua en plaza de garaje nº 7.",cia:"Ocaso",tlf:"91.538.74.90",ref:"11234/2024",rep:"Impermeabilizaciones S.A.",est:"FINALIZADO"},
+    {id:16,fecha:"14/04/2024",cda:"103",com:"Plaza Mayor 3",ubi:"Azotea",det:"Inundación por rotura de bajante en azotea durante lluvia intensa.",cia:"Generali",tlf:"900 300 400",ref:"GEN-3301/2024",rep:"Generali Servicio",est:"FINALIZADO"},
+    {id:17,fecha:"30/06/2024",cda:"101",com:"Av. Madrid 45",ubi:"2ºC",det:"Humedades en pared medianera con edificio colindante.",cia:"Mapfre",tlf:"900 100 200",ref:"MAP-9901/2024",rep:"Arquitecto Técnico",est:"FINALIZADO"},
+    {id:18,fecha:"11/10/2024",cda:"105",com:"Rioja 17",ubi:"Portal",det:"Vandalismo en buzones y puerta de entrada. Se reponen elementos dañados.",cia:"Ocaso",tlf:"91.538.74.90",ref:"98721/2024",rep:"Cerrajería Rápida",est:"FINALIZADO"},
+  ],
+  2023: [
+    {id:19,fecha:"10/01/2023",cda:"105",com:"Rioja 17",ubi:"Ascensor",det:"Avería ascensor planta 3. Empresa de mantenimiento en guardia.",cia:"Ocaso",tlf:"91.538.74.90",ref:"54321/2023",rep:"Otis",est:"FINALIZADO"},
+    {id:20,fecha:"22/03/2023",cda:"102",com:"C/ Serrano 12",ubi:"Sótano",det:"Inundación en sótano por tromba de agua.",cia:"Allianz",tlf:"900 200 300",ref:"ALL-1120/2023",rep:"Allianz Servicio",est:"FINALIZADO"},
+    {id:21,fecha:"05/06/2023",cda:"104",com:"C/ Gran Vía 88",ubi:"Terraza",det:"Grietas en solado de terraza comunitaria. Perito de AXA evalúa.",cia:"AXA",tlf:"900 400 500",ref:"AXA-3341/2023",rep:"Reformas Total",est:"FINALIZADO"},
+  ],
+  2022: [{id:22,fecha:"15/04/2022",cda:"105",com:"Rioja 17",ubi:"Fachada",det:"Goteras en fachada principal, zona balcones 4ª planta.",cia:"Ocaso",tlf:"91.538.74.90",ref:"32100/2022",rep:"Fachadas Madrid",est:"FINALIZADO"}],
+  2021: [{id:23,fecha:"08/03/2021",cda:"101",com:"Av. Madrid 45",ubi:"Cubierta",det:"Filtración importante en cubierta plana tras nevada.",cia:"Mapfre",tlf:"900 100 200",ref:"MAP-0012/2021",rep:"Tekton Obras",est:"FINALIZADO"},{id:24,fecha:"19/09/2021",cda:"105",com:"Rioja 17",ubi:"Garaje",det:"Filtración de agua en garaje subterráneo.",cia:"Ocaso",tlf:"91.538.74.90",ref:"71234/2021",rep:"Impermeabilizaciones",est:"FINALIZADO"}],
+  2020: [{id:25,fecha:"20/02/2020",cda:"103",com:"Plaza Mayor 3",ubi:"Bajante",det:"Rotura de bajante pluvial en planta baja.",cia:"Generali",tlf:"900 300 400",ref:"GEN-0521/2020",rep:"Fontanería 24h",est:"FINALIZADO"},{id:26,fecha:"11/11/2020",cda:"105",com:"Rioja 17",ubi:"5ºA",det:"Gotera en techo de habitación por fuga de cubierta.",cia:"Ocaso",tlf:"91.538.74.90",ref:"92341/2020",rep:"Ocaso Servicio",est:"FINALIZADO"}],
+  2019: [{id:27,fecha:"14/05/2019",cda:"105",com:"Rioja 17",ubi:"Portal",det:"Rotura de buzones por acto vandálico.",cia:"Ocaso",tlf:"91.538.74.90",ref:"12001/2019",rep:"Cerrajero Urgente",est:"FINALIZADO"},{id:28,fecha:"30/10/2019",cda:"101",com:"Av. Madrid 45",ubi:"Ascensor",det:"Avería motor ascensor. Sustitución completa.",cia:"Mapfre",tlf:"900 100 200",ref:"MAP-4401/2019",rep:"Thyssen Krupp",est:"FINALIZADO"},{id:29,fecha:"12/12/2019",cda:"102",com:"C/ Serrano 12",ubi:"Cubierta",det:"Filtración por cubierta en penúltima planta.",cia:"Allianz",tlf:"900 200 300",ref:"ALL-8812/2019",rep:"Allianz Reparaciones",est:"FINALIZADO"}],
+};
+
+const COMUNIDADES = [
+  {nom:"C/ Rioja, 17",cda:"105",vecinos:48,cia:"Ocaso",tlf:"91.538.74.90",icon:"🏢",grad:"linear-gradient(135deg,#6366f1,#06b6d4)"},
+  {nom:"Av. Madrid, 45",cda:"101",vecinos:62,cia:"Mapfre",tlf:"900 100 200",icon:"🏬",grad:"linear-gradient(135deg,#10b981,#06b6d4)"},
+  {nom:"C/ Serrano, 12",cda:"102",vecinos:34,cia:"Allianz",tlf:"900 200 300",icon:"🏛️",grad:"linear-gradient(135deg,#f59e0b,#ef4444)"},
+  {nom:"Plaza Mayor, 3",cda:"103",vecinos:26,cia:"Generali",tlf:"900 300 400",icon:"🏗️",grad:"linear-gradient(135deg,#8b5cf6,#6366f1)"},
+  {nom:"C/ Gran Vía, 88",cda:"104",vecinos:51,cia:"AXA",tlf:"900 400 500",icon:"🏠",grad:"linear-gradient(135deg,#ec4899,#8b5cf6)"},
+  {nom:"C/ Alcalá, 210",cda:"106",vecinos:40,cia:"Zurich",tlf:"900 500 600",icon:"🌆",grad:"linear-gradient(135deg,#06b6d4,#6366f1)"},
+];
+
+let year = 2026, activeFilter = 'ALL', charts = {};
+
+// ════ NAV ════
+window.onload = () => { animateCounters(); refreshData(); };
+
+function openDash() {
+  document.getElementById('dashboard').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  initCharts();
+}
+function closeDash() {
+  document.getElementById('dashboard').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+const PANEL_TITLES = {overview:'Resumen General',siniestros:'Gestión de Siniestros',comunidades:'Comunidades Gestionadas',informes:'Informes y Exportación',polizas:'Pólizas de Seguro'};
+
+function showPanel(name, btn) {
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.slink').forEach(b=>b.classList.remove('active'));
+  const p = document.getElementById('panel-'+name);
+  if(p) p.classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('ptitle').textContent = PANEL_TITLES[name]||name;
+  if(name==='informes') initResolChart();
+}
+
+// ════ DATA ════
+function refreshData() {
+  const data = DB[year]||[];
+  updateKPIs(data);
+  renderTable(data);
+  renderCom(data);
+  const pend = data.filter(s=>s.est==='ABIERTO'||s.est==='PROCESO').length;
+  document.getElementById('badge-pend').textContent = pend;
+}
+
+function changeYear(y) { year = parseInt(y); activeFilter='ALL'; refreshData(); updateCharts(); }
+
+function updateKPIs(data) {
+  document.getElementById('kv-total').textContent = data.length;
+  document.getElementById('kv-ab').textContent = data.filter(s=>s.est==='ABIERTO').length;
+  document.getElementById('kv-pr').textContent = data.filter(s=>s.est==='PROCESO').length;
+  document.getElementById('kv-fi').textContent = data.filter(s=>s.est==='FINALIZADO').length;
+}
+
+// ════ TABLE ════
+function renderTable(data) {
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = '';
+  data.forEach(s=>{
+    const cls = s.est==='ABIERTO'?'eA':s.est==='PROCESO'?'eP':'eF';
+    const icon = s.est==='ABIERTO'?'🟡':s.est==='PROCESO'?'🔴':'🟢';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="white-space:nowrap;color:#94a3b8;font-size:.8rem">${s.fecha}</td>
+      <td>${s.com}<br><span style="font-size:.72rem;color:#64748b">CDA ${s.cda}</span></td>
+      <td style="font-weight:600;color:#fff;white-space:nowrap">${s.ubi}</td>
+      <td><div class="trunc" title="${s.det}">${s.det}</div></td>
+      <td style="white-space:nowrap">${s.cia}<br><span style="font-size:.73rem;color:#64748b">${s.tlf}</span></td>
+      <td style="font-family:monospace;color:#a5b4fc;font-size:.8rem;white-space:nowrap">${s.ref}</td>
+      <td style="color:#94a3b8;font-size:.8rem">${s.rep||'—'}</td>
+      <td><span class="estado-badge ${cls}">${icon} ${s.est}</span></td>
+      <td><button class="btn-xs" onclick="openModal(${s.id})">Ver</button></td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('rowCount').textContent = data.length;
+}
+
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let d = DB[year]||[];
+  if(activeFilter!=='ALL') d=d.filter(s=>s.est===activeFilter);
+  if(q) d=d.filter(s=>[s.ubi,s.det,s.ref,s.com,s.rep].join(' ').toLowerCase().includes(q));
+  renderTable(d);
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>{b.classList.remove('fa','fp','ff');});
+  if(btn){
+    if(f==='ABIERTO') btn.classList.add('fa');
+    else if(f==='PROCESO') btn.classList.add('fp');
+    else if(f==='FINALIZADO') btn.classList.add('ff');
+  }
+  filterTable();
+}
+
+// ════ MODAL ════
+function openModal(id) {
+  const all = Object.values(DB).flat();
+  const s = all.find(x=>x.id===id);
+  if(!s) return;
+  const cls = s.est==='ABIERTO'?'eA':s.est==='PROCESO'?'eP':'eF';
+  document.getElementById('mTitle').textContent = 'Siniestro · '+s.ref;
+  document.getElementById('mBody').innerHTML = `
+    <div class="modal-grid">
+      <div class="mfield"><label>Fecha</label><p>${s.fecha}</p></div>
+      <div class="mfield"><label>Estado</label><p><span class="estado-badge ${cls}">${s.est}</span></p></div>
+      <div class="mfield"><label>Comunidad</label><p>${s.com} · CDA ${s.cda}</p></div>
+      <div class="mfield"><label>Ubicación</label><p>${s.ubi}</p></div>
+      <div class="mfield"><label>Compañía Aseguradora</label><p>${s.cia} · ${s.tlf}</p></div>
+      <div class="mfield"><label>Referencia del Siniestro</label><p style="font-family:monospace;color:#a5b4fc">${s.ref}</p></div>
+      <div class="mfield full"><label>Reparador Asignado</label><p>${s.rep||'No asignado'}</p></div>
+      <div class="mfield full"><label>Detalles del Siniestro</label><p style="white-space:pre-wrap;line-height:1.75">${s.det}</p></div>
+    </div>`;
+  document.getElementById('modalOv').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOv').classList.remove('open'); }
+document.getElementById('modalOv').onclick = e=>{ if(e.target===document.getElementById('modalOv'))closeModal(); };
+
+// ════ COMUNIDADES ════
+function renderCom(curData) {
+  const all = Object.values(DB).flat();
+  const g = document.getElementById('comGrid');
+  g.innerHTML = '';
+  COMUNIDADES.forEach(c=>{
+    const cur = curData.filter(s=>s.cda===c.cda);
+    const hist = all.filter(s=>s.cda===c.cda).length;
+    const pend = cur.filter(s=>s.est==='ABIERTO'||s.est==='PROCESO').length;
+    g.innerHTML += `
+    <div class="com-panel-card">
+      <div class="com-panel-head">
+        <div class="com-panel-ico" style="background:${c.grad}">${c.icon}</div>
+        <div><h4>${c.nom}</h4><span>CDA ${c.cda} · ${c.vecinos} vecinos</span></div>
+      </div>
+      <div class="com-panel-body">
+        <div class="cstat"><span>Compañía de Seguros</span><span>${c.cia}</span></div>
+        <div class="cstat"><span>Teléfono Compañía</span><span>${c.tlf}</span></div>
+        <div class="cstat"><span>Siniestros ${year}</span><span>${cur.length}</span></div>
+        <div class="cstat"><span>Pendientes / En proceso</span><span style="color:${pend>0?'#f59e0b':'#34d399'}">${pend}</span></div>
+        <div class="cstat"><span>Histórico total</span><span>${hist}</span></div>
+      </div>
+    </div>`;
+  });
+}
+
+// ════ CHARTS ════
+function initCharts() {
+  if(charts.mes) return;
+  Chart.defaults.color='#94a3b8';
+  Chart.defaults.borderColor='rgba(255,255,255,.06)';
+
+  charts.mes = new Chart(document.getElementById('cMes'),{
+    type:'bar',
+    data:{labels:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+    datasets:[
+      {label:'Abiertos/Proceso',data:Array(12).fill(0),backgroundColor:'rgba(99,102,241,.75)',borderRadius:5},
+      {label:'Finalizados',data:Array(12).fill(0),backgroundColor:'rgba(16,185,129,.7)',borderRadius:5}
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{padding:15}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'}},y:{grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true,ticks:{stepSize:1}}}}
+  });
+
+  charts.estado = new Chart(document.getElementById('cEstado'),{
+    type:'doughnut',
+    data:{labels:['Abiertos','En Proceso','Finalizados'],
+    datasets:[{data:[5,1,2],backgroundColor:['rgba(245,158,11,.85)','rgba(239,68,68,.85)','rgba(16,185,129,.85)'],borderColor:['#f59e0b','#ef4444','#10b981'],borderWidth:2,hoverOffset:10}]},
+    options:{responsive:true,cutout:'62%',plugins:{legend:{position:'bottom',labels:{padding:15}}}}
+  });
+
+  charts.anual = new Chart(document.getElementById('cAnual'),{
+    type:'line',
+    data:{labels:['2019','2020','2021','2022','2023','2024','2025','2026'],
+    datasets:[{label:'Siniestros',data:[3,2,2,1,3,4,6,8],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.1)',fill:true,tension:.4,pointBackgroundColor:'#6366f1',pointRadius:5,pointHoverRadius:7}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'}},y:{grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true,ticks:{stepSize:1}}}}
+  });
+
+  charts.com = new Chart(document.getElementById('cCom'),{
+    type:'bar',
+    data:{labels:COMUNIDADES.map(c=>c.nom.split(',')[0]),
+    datasets:[{label:'Siniestros',data:COMUNIDADES.map(c=>0),backgroundColor:['rgba(99,102,241,.8)','rgba(16,185,129,.8)','rgba(245,158,11,.8)','rgba(139,92,246,.8)','rgba(236,72,153,.8)','rgba(6,182,212,.8)'],borderRadius:7}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'}},y:{grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true,ticks:{stepSize:1}}}}
+  });
+
+  updateCharts();
+}
+
+function initResolChart() {
+  if(charts.resol) return;
+  charts.resol = new Chart(document.getElementById('cResol'),{
+    type:'bar',
+    data:{labels:['Ocaso','Mapfre','Allianz','Generali','AXA','Zurich'],
+    datasets:[{label:'Días promedio',data:[45,32,58,40,28,35],backgroundColor:['rgba(99,102,241,.8)','rgba(16,185,129,.8)','rgba(245,158,11,.8)','rgba(139,92,246,.8)','rgba(6,182,212,.8)','rgba(236,72,153,.8)'],borderRadius:7}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},beginAtZero:true},y:{grid:{color:'rgba(255,255,255,.05)'}}}}
+  });
+}
+
+function updateCharts() {
+  if(!charts.mes) return;
+  const data = DB[year]||[];
+  const mAb=Array(12).fill(0), mFi=Array(12).fill(0);
+  data.forEach(s=>{
+    const m=parseInt(s.fecha.split('/')[1])-1;
+    if(s.est==='FINALIZADO') mFi[m]++; else mAb[m]++;
+  });
+  charts.mes.data.datasets[0].data = mAb;
+  charts.mes.data.datasets[1].data = mFi;
+  charts.mes.update();
+
+  const ab=data.filter(s=>s.est==='ABIERTO').length;
+  const pr=data.filter(s=>s.est==='PROCESO').length;
+  const fi=data.filter(s=>s.est==='FINALIZADO').length;
+  charts.estado.data.datasets[0].data=[ab,pr,fi];
+  charts.estado.update();
+
+  charts.com.data.datasets[0].data = COMUNIDADES.map(c=>data.filter(s=>s.cda===c.cda).length);
+  charts.com.update();
+}
+
+// ════ EXPORT ════
+function exportCSV() {
+  const data = DB[year]||[];
+  const h = ['Fecha','CDA','Comunidad','Ubicación','Compañía','Teléfono','Referencia','Reparador','Estado','Detalles'];
+  const rows = data.map(s=>[s.fecha,s.cda,s.com,s.ubi,s.cia,s.tlf,s.ref,s.rep,s.est,`"${s.det.replace(/"/g,'""')}"`]);
+  const csv = [h.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`siniestros_${year}.csv`;
+  a.click();
+}
+
+function printRep() {
+  const data = DB[year]||[];
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Informe Siniestros ${year}</title>
+  <style>body{font-family:Arial,sans-serif;margin:1.5cm;font-size:10px;color:#1e293b}
+  h1{font-size:16px;margin-bottom:4px}p.sub{color:#64748b;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse}th{background:#1e293b;color:#fff;padding:6px 8px;text-align:left;font-size:9px}
+  td{padding:5px 8px;border-bottom:1px solid #e2e8f0;vertical-align:top}tr:nth-child(even)td{background:#f8fafc}
+  .A{color:#d97706;font-weight:700}.P{color:#dc2626;font-weight:700}.F{color:#059669;font-weight:700}
+  .det{font-size:8px;color:#64748b;max-width:180px}@media print{body{margin:.8cm}}</style></head>
+  <body><h1>INCIDENCIAS SINIESTROS SEGUROS ${year}</h1>
+  <p class="sub">Ortega Delgado · Administrador de Fincas · ${new Date().toLocaleDateString('es-ES')}</p>
+  <table><tr><th>Fecha</th><th>Comunidad</th><th>Ubicación</th><th>Cía.</th><th>Referencia</th><th>Reparador</th><th>Estado</th><th>Detalles</th></tr>
+  ${data.map(s=>`<tr><td>${s.fecha}</td><td>${s.com} (${s.cda})</td><td><b>${s.ubi}</b></td><td>${s.cia}<br>${s.tlf}</td><td style="font-family:monospace">${s.ref}</td><td>${s.rep||'—'}</td><td class="${s.est[0]}">${s.est}</td><td class="det">${s.det.substring(0,120)}${s.det.length>120?'...':''}</td></tr>`).join('')}
+  </table><script>setTimeout(()=>window.print(),400)<\/script></body></html>`);
+  w.document.close();
+}
+
+function printResumen() {
+  const data = DB[year]||[];
+  const ab=data.filter(s=>s.est==='ABIERTO').length;
+  const pr=data.filter(s=>s.est==='PROCESO').length;
+  const fi=data.filter(s=>s.est==='FINALIZADO').length;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Resumen ${year}</title>
+  <style>body{font-family:Arial,sans-serif;margin:2cm;color:#1e293b}h1{font-size:20px;color:#0f172a}
+  .row{display:flex;gap:16px;margin:20px 0}.kpi{flex:1;background:#f1f5f9;border-radius:8px;padding:20px;text-align:center}
+  .n{font-size:36px;font-weight:900}.l{font-size:12px;color:#64748b;margin-top:6px}
+  .ab .n{color:#d97706}.pr .n{color:#dc2626}.fi .n{color:#059669}</style></head>
+  <body><h1>Resumen Ejecutivo · Siniestros ${year}</h1>
+  <p>Ortega Delgado · Administrador de Fincas · ${new Date().toLocaleDateString('es-ES')}</p>
+  <div class="row">
+    <div class="kpi"><div class="n">${data.length}</div><div class="l">Total Siniestros</div></div>
+    <div class="kpi ab"><div class="n">${ab}</div><div class="l">Abiertos</div></div>
+    <div class="kpi pr"><div class="n">${pr}</div><div class="l">En Proceso</div></div>
+    <div class="kpi fi"><div class="n">${fi}</div><div class="l">Finalizados</div></div>
+  </div>
+  <script>setTimeout(()=>window.print(),400)<\/script></body></html>`);
+  w.document.close();
+}
+
+// ════ COUNTER ════
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const target=parseInt(el.dataset.count);
+    const suf=el.dataset.suffix||'+';
+    let cur=0; const step=target/(2000/16);
+    const t=setInterval(()=>{
+      cur+=step;
+      if(cur>=target){cur=target;clearInterval(t);}
+      el.textContent=Math.floor(cur).toLocaleString('es-ES')+suf;
+    },16);
+  });
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+});
+
+refreshData();
+</script>
+</body>
+</html>

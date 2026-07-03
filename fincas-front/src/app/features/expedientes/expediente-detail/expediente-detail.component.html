@@ -1,0 +1,172 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal modal-wide" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="detail-title">
+        <div class="detail-id-wrap">
+          <span class="tipo-chip" [class.tipo-chip--siniestro]="isSiniestro">
+            <i [class]="isSiniestro ? 'fa-solid fa-shield-halved' : 'fa-solid fa-screwdriver-wrench'"></i>
+            {{ expediente.tipo }}
+          </span>
+          <h2>Expediente #{{ expediente.id }}</h2>
+        </div>
+        <app-status-badge [estado]="expediente.estado" />
+      </div>
+      <button class="btn btn-ghost btn-icon" type="button" (click)="close()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-grid">
+
+        <!-- Info general -->
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-clipboard-list"></i> Información General
+          </h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Fecha</span>
+              <span class="info-value">{{ expediente.fecha | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tipo de incidencia</span>
+              <span class="info-value">{{ expediente.tipoIncidencia || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Nº Comunidad</span>
+              <span class="info-value">{{ expediente.numeroComunidad || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Comunidad</span>
+              <span class="info-value highlight">{{ expediente.comunidad }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Ubicación</span>
+              <span class="info-value">{{ expediente.ubicacion || '—' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reparadores -->
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-helmet-safety"></i> Empresas reparadoras
+          </h3>
+          @if (!expediente.reparadores || expediente.reparadores.length === 0) {
+            <p class="info-value text-muted">No asignado</p>
+          } @else {
+            <div class="reparadores-chips">
+              @for (r of expediente.reparadores; track r) {
+                <span class="reparador-chip">
+                  <i class="fa-solid fa-screwdriver-wrench"></i>
+                  {{ r }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Descripción -->
+        <div class="detail-section col-span-2">
+          <h3 class="section-title">
+            <i class="fa-solid fa-file-lines"></i> Descripción
+          </h3>
+          <app-descripciones
+            [entradas]="expediente.descripcion"
+            emptyText="Sin descripción registrada."
+          />
+        </div>
+
+        <!-- Observaciones -->
+        @if (expediente.observaciones) {
+          <div class="detail-section col-span-2">
+            <h3 class="section-title">
+              <i class="fa-solid fa-note-sticky"></i> Observaciones
+            </h3>
+            <div class="details-text">{{ expediente.observaciones }}</div>
+          </div>
+        }
+
+        <!-- Datos del seguro (solo siniestro) -->
+        @if (isSiniestro) {
+          <div class="detail-section col-span-2 siniestro-section">
+            <h3 class="section-title section-title--siniestro">
+              <i class="fa-solid fa-building-shield"></i> Datos del Seguro
+            </h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Compañía de Seguros</span>
+                <span class="info-value">{{ expediente.companiaSeguros || '—' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Teléfono Compañía</span>
+                <span class="info-value">{{ expediente.telefonoCompania || '—' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">N.º CDAD</span>
+                <span class="info-value">{{ expediente.numeroCDA || '—' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Referencia Siniestro</span>
+                <span class="info-value highlight-blue">{{ expediente.referenciaSiniestro || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Auditoría -->
+        <div class="detail-section col-span-2 audit-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-clock-rotate-left"></i> Auditoría
+          </h3>
+          <div class="audit-grid">
+            <div class="audit-item">
+              <i class="fa-solid fa-user-plus"></i>
+              <div>
+                <span class="audit-label">Abierto por</span>
+                <span class="audit-value">{{ expediente.creadoPorNombre }}</span>
+              </div>
+              <span class="audit-date">{{ expediente.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="audit-item">
+              <i class="fa-solid fa-user-pen"></i>
+              <div>
+                <span class="audit-label">Última modificación por</span>
+                <span class="audit-value">{{ expediente.modificadoPorNombre }}</span>
+              </div>
+              <span class="audit-date">{{ expediente.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <!-- Botón convertir tipo -->
+      <button
+        type="button"
+        class="btn btn-secondary btn-convert"
+        (click)="convertirTipo()"
+        [disabled]="converting()"
+        [title]="'Convertir a ' + tipoOpuestoLabel"
+      >
+        @if (converting()) { <span class="spinner-sm"></span> }
+        @if (!converting()) { <i class="fa-solid fa-arrows-rotate"></i> }
+        {{ converting() ? 'Convirtiendo...' : 'Convertir a ' + tipoOpuestoLabel }}
+      </button>
+
+      <div class="footer-right">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          <i class="fa-solid fa-xmark"></i> Cerrar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="edit()">
+          <i class="fa-solid fa-pen"></i> Editar
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

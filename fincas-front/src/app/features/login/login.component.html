@@ -1,0 +1,96 @@
+<div class="login-page">
+
+  <!-- Panel izquierdo: branding -->
+  <div class="login-brand">
+    <div class="brand-content">
+      <img src="logotipo-web.png" alt="Fincas Ortega Delgado" class="brand-logo"/>
+      <h1 class="brand-title">Fincas Ortega Delgado</h1>
+      <p class="brand-subtitle">Sistema de Gestión de Siniestros e Incidencias</p>
+
+      <p class="brand-tagline">Plataforma integral para la gestión de comunidades de propietarios</p>
+    </div>
+
+    <div class="brand-footer">
+      <span>© 2026 Fincas Ortega Delgado · Todos los derechos reservados</span>
+    </div>
+  </div>
+
+  <!-- Panel derecho: formulario -->
+  <div class="login-form-wrap">
+    <div class="login-card">
+
+      <div class="login-header">
+        <div class="login-icon">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h2>Iniciar sesión</h2>
+        <p>Introduce tus credenciales para acceder</p>
+      </div>
+
+      <form (ngSubmit)="submit()" #form="ngForm" class="login-form" novalidate>
+
+        <div class="form-group">
+          <label for="email">
+            <i class="fa-solid fa-envelope"></i> Correo electrónico
+          </label>
+          <input
+            id="email"
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="admin@fincas.com"
+            autocomplete="email"
+            [disabled]="loading()"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            <i class="fa-solid fa-key"></i> Contraseña
+          </label>
+          <div class="pass-wrap">
+            <input
+              id="password"
+              [type]="showPass() ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              [disabled]="loading()"
+            />
+            <button
+              type="button"
+              class="pass-toggle"
+              (click)="showPass.set(!showPass())"
+              [title]="showPass() ? 'Ocultar' : 'Mostrar'"
+            >
+              <i [class]="showPass() ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        @if (error()) {
+          <div class="login-error">
+            <i class="fa-solid fa-circle-xmark"></i>
+            {{ error() }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="btn-login"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <span class="spinner-sm"></span> Verificando...
+          } @else {
+            <i class="fa-solid fa-right-to-bracket"></i> Entrar
+          }
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>

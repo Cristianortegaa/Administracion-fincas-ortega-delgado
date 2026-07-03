@@ -1,0 +1,397 @@
+<div class="page-content">
+
+  <!-- ── Cabecera ─────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <i class="fa-solid fa-folder-open"></i> Expedientes
+      </h1>
+      <p class="page-subtitle">Incidencias y siniestros — gestión unificada 2026</p>
+    </div>
+    <div class="header-actions">
+      @if (someSelected) {
+        <button class="btn btn-secondary" (click)="openPrintModal()">
+          <i class="fa-solid fa-print"></i> Imprimir ({{ selectedIds().size }})
+        </button>
+      }
+      <button class="btn btn-primary" (click)="openNew()">
+        <i class="fa-solid fa-plus"></i> Nuevo Expediente
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Tabs ──────────────────────────────────────────── -->
+  <div class="tabs-row">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'Todos'"
+      (click)="setTab('Todos')"
+    >
+      <i class="fa-solid fa-layer-group"></i>
+      Todos
+      <span class="tab-count">{{ totalTodos }}</span>
+    </button>
+    <button
+      class="tab-btn tab-btn--incidencia"
+      [class.active]="activeTab() === 'Incidencia'"
+      (click)="setTab('Incidencia')"
+    >
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+      Incidencias
+      <span class="tab-count">{{ totalIncidencias }}</span>
+    </button>
+    <button
+      class="tab-btn tab-btn--siniestro"
+      [class.active]="activeTab() === 'Siniestro'"
+      (click)="setTab('Siniestro')"
+    >
+      <i class="fa-solid fa-shield-halved"></i>
+      Siniestros
+      <span class="tab-count tab-count--siniestro">{{ totalSiniestros }}</span>
+    </button>
+  </div>
+
+  <!-- ── Stats ─────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-card estado-abierto">
+      <span class="stat-icon"><i class="fa-solid fa-circle-dot"></i></span>
+      <div>
+        <p class="stat-value">{{ totalAbiertos }}</p>
+        <p class="stat-label">Abiertos</p>
+      </div>
+    </div>
+    <div class="stat-card estado-cerrado">
+      <span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span>
+      <div>
+        <p class="stat-value">{{ totalCerrados }}</p>
+        <p class="stat-label">Cerrados</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fa-solid fa-folder"></i></span>
+      <div>
+        <p class="stat-value">{{ items().length }}</p>
+        <p class="stat-label">{{ activeTab() === 'Todos' ? 'Total' : activeTab() + 's' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filtros ───────────────────────────────────────── -->
+  <div class="filters-bar card">
+
+    <!-- Fila 1: búsqueda de texto -->
+    <div class="search-wrap">
+      <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input
+        type="text"
+        placeholder="Buscar por comunidad, descripción, empresa reparadora, referencia..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        class="search-input"
+      />
+    </div>
+
+    <!-- Fila 2: filtros desplegables + fecha -->
+    <div class="filters-row">
+
+      <!-- Nº Comunidad -->
+      @if (numerosDisponibles().length > 0) {
+        <div class="filter-group">
+          <span class="filter-label"><i class="fa-solid fa-hashtag"></i> Nº Com.</span>
+          <select [(ngModel)]="filter.numeroComunidad" (ngModelChange)="onFilterChange()" class="filter-select">
+            <option [ngValue]="undefined"></option>
+            @for (n of numerosDisponibles(); track n) {
+              <option [ngValue]="n">{{ n }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Comunidad -->
+      @if (comunidades().length > 0) {
+        <div class="filter-group">
+          <span class="filter-label"><i class="fa-solid fa-building"></i> Comunidad</span>
+          <select [(ngModel)]="filter.comunidad" (ngModelChange)="onFilterChange()" class="filter-select">
+            <option value=""></option>
+            @for (c of comunidades(); track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Año -->
+      @if (anios().length > 0) {
+        <div class="filter-group">
+          <span class="filter-label"><i class="fa-solid fa-calendar-days"></i> Año</span>
+          <select [(ngModel)]="filter.anio" (ngModelChange)="onFilterChange()" class="filter-select">
+            <option [ngValue]="undefined"></option>
+            @for (a of anios(); track a) {
+              <option [ngValue]="a">{{ a }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Estado -->
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-circle-half-stroke"></i> Estado</span>
+        <select [(ngModel)]="filter.estado" (ngModelChange)="onFilterChange()" class="filter-select">
+          <option value=""></option>
+          @for (e of estados; track e.value) {
+            <option [value]="e.value">{{ e.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Tipo de incidencia -->
+      @if (tiposIncidencia().length > 0) {
+        <div class="filter-group">
+          <span class="filter-label"><i class="fa-solid fa-tag"></i> Tipo</span>
+          <select [(ngModel)]="filter.tipoIncidencia" (ngModelChange)="onFilterChange()" class="filter-select">
+            <option value=""></option>
+            @for (t of tiposIncidencia(); track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Empresa reparadora -->
+      @if (empresasDisponibles().length > 0) {
+        <div class="filter-group">
+          <span class="filter-label"><i class="fa-solid fa-helmet-safety"></i> Empresa</span>
+          <select [(ngModel)]="filter.empresa" (ngModelChange)="onFilterChange()" class="filter-select">
+            <option value=""></option>
+            @for (emp of empresasDisponibles(); track emp) {
+              <option [value]="emp">{{ emp }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Compañía de seguros -->
+      @if (companiasDisponibles().length > 0) {
+        <div class="filter-group">
+          <span class="filter-label"><i class="fa-solid fa-building-shield"></i> Seguros</span>
+          <select [(ngModel)]="filter.companiaSeguros" (ngModelChange)="onFilterChange()" class="filter-select">
+            <option value=""></option>
+            @for (c of companiasDisponibles(); track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Fecha desde -->
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-calendar"></i> Desde</span>
+        <input
+          type="date"
+          [(ngModel)]="filter.fechaDesde"
+          (ngModelChange)="onFilterChange()"
+          class="filter-date"
+        />
+      </div>
+
+      <!-- Fecha hasta -->
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-calendar-check"></i> Hasta</span>
+        <input
+          type="date"
+          [(ngModel)]="filter.fechaHasta"
+          (ngModelChange)="onFilterChange()"
+          class="filter-date"
+        />
+      </div>
+
+      @if (hasActiveFilters) {
+        <button class="btn btn-ghost btn-sm" (click)="clearFilters()">
+          <i class="fa-solid fa-xmark"></i> Limpiar
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Tabla ─────────────────────────────────────────── -->
+  <div class="table-card card">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando expedientes...</p>
+      </div>
+    } @else if (items().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
+        <h3>No hay expedientes registrados</h3>
+        <p>Crea el primer expediente pulsando el botón superior</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="check-col">
+                <input
+                  type="checkbox"
+                  [checked]="allSelected"
+                  [indeterminate]="partialSelected"
+                  (change)="toggleAll($event)"
+                  title="Seleccionar todos"
+                />
+              </th>
+              <th>Tipo</th>
+              <th>
+                <button class="sort-btn" (click)="toggleSort()" [title]="sortAsc() ? 'Más antiguos primero' : 'Más recientes primero'">
+                  Fecha
+                  <i class="fa-solid" [class.fa-arrow-down-short-wide]="!sortAsc()" [class.fa-arrow-up-wide-short]="sortAsc()"></i>
+                </button>
+              </th>
+              <th>Nº</th>
+              <th>Comunidad</th>
+              <th>Descripción</th>
+              <th>Empresa(s)</th>
+              <th>Abierto por</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of items(); track e.id) {
+              <tr (click)="openDetail(e)" class="table-row" [class.row-selected]="isSelected(e.id)">
+                <td class="check-col" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    [checked]="isSelected(e.id)"
+                    (change)="toggleOne(e.id, $event)"
+                  />
+                </td>
+                <td>
+                  <span class="tipo-badge" [class.tipo-badge--siniestro]="e.tipo === 'Siniestro'">
+                    <i [class]="e.tipo === 'Siniestro' ? 'fa-solid fa-shield-halved' : 'fa-solid fa-screwdriver-wrench'"></i>
+                    {{ e.tipo }}
+                  </span>
+                </td>
+                <td class="date-cell">{{ e.fecha | date:'dd/MM/yy' }}</td>
+                <td class="num-cell">
+                  {{ e.numeroComunidad || '—' }}
+                </td>
+                <td class="comunidad-cell">{{ e.comunidad }}</td>
+                <td class="desc-cell">{{ e.descripcion?.at(-1)?.texto || '—' }}</td>
+                <td class="reparador-cell">
+                  <div class="reparador-inner">
+                    @if (!e.reparadores || e.reparadores.length === 0) {
+                      <span class="text-muted">—</span>
+                    } @else {
+                      <span class="reparador-name">{{ e.reparadores[0] }}</span>
+                      @if (e.reparadores.length > 1) {
+                        <span class="reparador-more">+{{ e.reparadores.length - 1 }}</span>
+                      }
+                    }
+                  </div>
+                </td>
+                <td class="autor-cell">
+                  <span class="autor-chip">
+                    <i class="fa-solid fa-user"></i>
+                    {{ e.creadoPorNombre }}
+                  </span>
+                </td>
+                <td><app-status-badge [estado]="e.estado" /></td>
+                <td class="actions-cell" (click)="$event.stopPropagation()">
+                  <button
+                    class="btn btn-ghost btn-sm btn-icon"
+                    (click)="openEdit(e)"
+                    title="Editar"
+                  ><i class="fa-solid fa-pen"></i></button>
+                  <button
+                    class="btn btn-ghost btn-sm btn-icon btn-delete"
+                    (click)="confirmDelete(e, $event)"
+                    [disabled]="deleting() === e.id"
+                    title="Eliminar"
+                  ><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        {{ items().length }} expediente{{ items().length !== 1 ? 's' : '' }} encontrado{{ items().length !== 1 ? 's' : '' }}
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Toast ─────────────────────────────────────────────── -->
+<div class="toast-container">
+  @for (t of toastService.toasts(); track t.id) {
+    <div class="toast" [class]="'toast-' + t.type" (click)="toastService.remove(t.id)">
+      <i [class]="t.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"></i>
+      {{ t.message }}
+    </div>
+  }
+</div>
+
+<!-- ── Modal Formulario ─────────────────────────────────── -->
+@if (showForm()) {
+  <app-expediente-form
+    [expediente]="selected()"
+    [defaultTipo]="defaultTipoForNew"
+    (saved)="onSaved($event)"
+    (closed)="closeForm()"
+  />
+}
+
+<!-- ── Modal Detalle ────────────────────────────────────── -->
+@if (showDetail() && selected()) {
+  <app-expediente-detail
+    [expediente]="selected()!"
+    (closed)="closeDetail()"
+    (editRequested)="openEdit($event)"
+    (tipoChanged)="onTipoChanged($event)"
+  />
+}
+
+<!-- ── Modal Imprimir ───────────────────────────────────────── -->
+@if (showPrintModal()) {
+  <div class="modal-overlay" (click)="closePrintModal()">
+    <div class="modal print-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-print"></i> Imprimir expedientes</h2>
+        <button class="btn btn-ghost btn-icon" type="button" (click)="closePrintModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="print-info">
+          <i class="fa-solid fa-circle-check" style="color:var(--primary)"></i>
+          {{ selectedIds().size }} expediente{{ selectedIds().size !== 1 ? 's' : '' }} seleccionado{{ selectedIds().size !== 1 ? 's' : '' }}. ¿Qué quieres imprimir?
+        </p>
+        <div class="print-options">
+          <button class="print-option" (click)="printListado()">
+            <i class="fa-solid fa-table-list"></i>
+            <strong>Listado</strong>
+            <span>Tabla resumen con todos los expedientes seleccionados</span>
+          </button>
+          <button class="print-option" (click)="printDetalle()">
+            <i class="fa-solid fa-file-lines"></i>
+            <strong>Detalle</strong>
+            <span>Ficha completa de cada expediente con historial de descripciones</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Confirmar borrado ─────────────────────────────────── -->
+@if (pendingDelete()) {
+  <app-confirm-modal
+    [title]="'Eliminar expediente'"
+    [detail]="'Expediente #' + pendingDelete()!.id + ' — ' + pendingDelete()!.comunidad"
+    [loading]="deleting() !== null"
+    (confirmed)="doDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

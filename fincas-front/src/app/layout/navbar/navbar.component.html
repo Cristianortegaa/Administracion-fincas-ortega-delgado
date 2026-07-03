@@ -1,0 +1,100 @@
+<nav class="navbar">
+  <div class="nav-brand">
+    <img src="logotipo-web.png" alt="Fincas Ortega Delgado" class="brand-logo" />
+  </div>
+  <div class="nav-right">
+    <span class="nav-date">
+      <i class="fa-solid fa-calendar-days"></i>
+      {{ today | date:'dd/MM/yyyy' }}
+    </span>
+
+    @if (auth.currentUser(); as user) {
+      <div class="user-menu">
+
+        <!-- Botón usuario → abre dropdown -->
+        <div class="nav-user" [class.active]="showDropdown()" (click)="toggleDropdown()">
+          <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+          <div class="user-info">
+            <span class="user-name">{{ user.name }}</span>
+            <span class="user-email">{{ user.email }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-down dropdown-arrow" [class.open]="showDropdown()"></i>
+        </div>
+
+        <!-- Dropdown -->
+        @if (showDropdown()) {
+          <div class="user-dropdown">
+            <button class="dropdown-item" (click)="openChangePassword()">
+              <i class="fa-solid fa-lock"></i>
+              Cambiar contraseña
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item dropdown-item--danger" (click)="auth.logout()">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</nav>
+
+<!-- ── Modal cambio de contraseña ─────────────────────────── -->
+@if (showChangeModal()) {
+  <div class="modal-overlay" (click)="closeChangeModal()">
+    <div class="cp-modal" (click)="$event.stopPropagation()">
+
+      <div class="cp-header">
+        <div class="cp-title">
+          <i class="fa-solid fa-lock"></i>
+          Cambiar contraseña
+        </div>
+        <button class="btn btn-ghost btn-icon" type="button" (click)="closeChangeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="cp-body">
+        @if (cpSuccess()) {
+          <div class="cp-success">
+            <i class="fa-solid fa-circle-check"></i>
+            Contraseña actualizada correctamente.
+          </div>
+        } @else {
+          @if (cpError()) {
+            <div class="cp-error">
+              <i class="fa-solid fa-circle-xmark"></i>
+              {{ cpError() }}
+            </div>
+          }
+          <div class="form-group">
+            <label for="cpCurrent">Contraseña actual</label>
+            <input id="cpCurrent" name="cpCurrent" type="password"
+                   [(ngModel)]="cpCurrent" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <div class="form-group">
+            <label for="cpNew">Nueva contraseña</label>
+            <input id="cpNew" name="cpNew" type="password"
+                   [(ngModel)]="cpNew" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label for="cpConfirm">Confirmar contraseña</label>
+            <input id="cpConfirm" name="cpConfirm" type="password"
+                   [(ngModel)]="cpConfirm" placeholder="Repite la nueva contraseña" autocomplete="new-password" />
+          </div>
+          <div class="cp-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeChangeModal()" [disabled]="cpLoading()">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" (click)="submitChangePassword()" [disabled]="cpLoading()">
+              @if (cpLoading()) { <span class="spinner-sm"></span> }
+              Guardar
+            </button>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+}

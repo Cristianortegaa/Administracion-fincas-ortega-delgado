@@ -1,0 +1,40 @@
+@if (!hasEntradas) {
+  <p class="desc-empty">{{ emptyText }}</p>
+} @else {
+  <!-- Header / toggle -->
+  <div class="desc-header" (click)="toggle()">
+    <span class="desc-count">
+      <i class="fa-solid fa-comment-dots"></i>
+      {{ sortedEntradas.length }} entrada{{ sortedEntradas.length !== 1 ? 's' : '' }}
+    </span>
+    <button class="desc-toggle" type="button" [attr.aria-expanded]="expanded()">
+      <i class="fa-solid" [class.fa-chevron-up]="expanded()" [class.fa-chevron-down]="!expanded()"></i>
+    </button>
+  </div>
+
+  <!-- Entry list -->
+  @if (expanded()) {
+    <div class="desc-list">
+      @for (entrada of sortedEntradas; track entrada.fecha) {
+        <div class="desc-entry">
+          <div class="desc-meta">
+            <span class="desc-user">
+              <i class="fa-solid fa-circle-user"></i>
+              {{ entrada.usuario || 'Sistema' }}
+            </span>
+            <span class="desc-date">
+              @if (entrada.fecha && entrada.fecha !== '0001-01-01T00:00:00') {
+                <i class="fa-regular fa-calendar"></i>
+                {{ entrada.fecha | date:'dd/MM/yyyy HH:mm' }}
+              } @else {
+                <i class="fa-regular fa-calendar"></i>
+                Fecha no registrada
+              }
+            </span>
+          </div>
+          <div class="desc-texto">{{ entrada.texto }}</div>
+        </div>
+      }
+    </div>
+  }
+}

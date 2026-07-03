@@ -1,0 +1,49 @@
+<div class="modal-overlay" (click)="cancelled.emit()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+
+    <!-- Icono animado -->
+    <div class="confirm-icon-wrap">
+      <div class="confirm-ring"></div>
+      <div class="confirm-circle">
+        <i class="fa-solid fa-trash-can"></i>
+      </div>
+    </div>
+
+    <!-- Título -->
+    <h3 class="confirm-title">{{ title }}</h3>
+
+    <!-- Nombre / detalle del elemento (ej. "Expediente #5 — Comunidad Rioja") -->
+    @if (detail) {
+      <p class="confirm-detail">{{ detail }}</p>
+    }
+
+    <!-- Mensaje de advertencia -->
+    <p class="confirm-message">{{ message }}</p>
+
+    <!-- Botones -->
+    <div class="confirm-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cancelled.emit()"
+        [disabled]="loading"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger-solid"
+        (click)="confirmed.emit()"
+        [disabled]="loading"
+      >
+        @if (loading) {
+          <span class="spinner-sm"></span>
+        } @else {
+          <i class="fa-solid fa-trash-can"></i>
+        }
+        {{ confirmLabel }}
+      </button>
+    </div>
+
+  </div>
+</div>

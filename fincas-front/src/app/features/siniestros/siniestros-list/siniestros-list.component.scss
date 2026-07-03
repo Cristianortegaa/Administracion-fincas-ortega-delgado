@@ -1,0 +1,222 @@
+/* ── Cabecera ─────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.03em;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  i { font-size: 17px; color: var(--gold); }
+}
+
+.page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── Stats ────────────────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s, border-color .2s;
+
+  &:hover { box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+  /* Estado colors injected globally via .estado-* classes in styles.scss */
+  &.estado-abierto, &.estado-proceso, &.estado-finalizado { border-left: 3px solid; }
+}
+
+.stat-icon {
+  font-size: 16px;
+  color: var(--border-strong);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+/* Icon colors injected globally via .estado-* .stat-icon i in styles.scss */
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* stat-value colors injected globally via .estado-* .stat-value in styles.scss */
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-top: 3px;
+}
+
+/* ── Filtros ──────────────────────────────────────────────── */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  padding-left: 34px;
+  background: var(--surface-alt);
+  border-color: var(--border);
+
+  &:focus { background: var(--surface); }
+}
+
+.filters-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.filter-select {
+  width: auto;
+  min-width: 160px;
+  padding: 7px 10px;
+  font-size: 13px;
+  background: var(--surface-alt);
+  border-color: var(--border);
+
+  &:focus { background: var(--surface); }
+}
+
+/* ── Tabla ────────────────────────────────────────────────── */
+.table-card { overflow: hidden; }
+
+.table-wrapper { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+thead tr {
+  background: var(--surface-alt);
+  border-bottom: 2px solid var(--border);
+}
+
+thead th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  white-space: nowrap;
+}
+
+.table-row {
+  cursor: pointer;
+  transition: background .12s;
+
+  td {
+    padding: 12px 14px;
+    color: var(--text-mid);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  &:hover { background: #F5F7FC; }
+  &:last-child td { border-bottom: none; }
+}
+
+/* ── Cell types ───────────────────────────────────────────── */
+.date-cell    { white-space: nowrap; color: var(--text-muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.cda-cell     { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.comunidad-cell { font-weight: 600; color: var(--text); max-width: 150px; }
+.ubicacion-cell { color: var(--text-mid); max-width: 130px; }
+.ref-cell     { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-mid); }
+.reparador-cell {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-mid);
+  font-size: 13px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.btn-delete:hover:not(:disabled) {
+  color: var(--danger) !important;
+  background: var(--danger-bg) !important;
+}
+
+/* ── Pie ──────────────────────────────────────────────────── */
+.table-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface-alt);
+}
+
+/* ── Loading ──────────────────────────────────────────────── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}

@@ -1,0 +1,160 @@
+<div class="page-content">
+
+  <!-- ── Cabecera ─────────────────────────────────────────── -->
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Bienvenido, {{ greeting }}</h1>
+      <p class="dash-subtitle">
+        <i class="fa-solid fa-calendar-days"></i>
+        {{ today | date:"EEEE, d 'de' MMMM 'de' yyyy":'':'es' }}
+        &nbsp;·&nbsp; Resumen general de la gestión de fincas
+      </p>
+    </div>
+    <div class="dash-actions">
+      <a class="btn btn-primary" routerLink="/expedientes">
+        <i class="fa-solid fa-plus"></i> Nuevo Expediente
+      </a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="dash-loading">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+  } @else {
+
+    <!-- ── KPI por estado ───────────────────────────────────── -->
+    <div class="section-label">
+      <i class="fa-solid fa-chart-bar"></i> Estado general
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-neutral">
+        <div class="kpi-left">
+          <div class="kpi-icon-box neutral">
+            <i class="fa-solid fa-folder"></i>
+          </div>
+        </div>
+        <div class="kpi-right">
+          <p class="kpi-num">{{ expTotal }}</p>
+          <p class="kpi-lbl">Total</p>
+          <div class="kpi-track">
+            <div class="kpi-fill neutral" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card estado-abierto">
+        <div class="kpi-left">
+          <div class="kpi-icon-box">
+            <i class="fa-solid fa-circle-dot"></i>
+          </div>
+        </div>
+        <div class="kpi-right">
+          <p class="kpi-num">{{ expAbiertos }}</p>
+          <p class="kpi-lbl">Abiertos</p>
+          <div class="kpi-track">
+            <div class="kpi-fill" [style.width.%]="pct(expAbiertos, expTotal)"></div>
+          </div>
+        </div>
+        <span class="kpi-pct">{{ pct(expAbiertos, expTotal) }}%</span>
+      </div>
+
+      <div class="kpi-card estado-cerrado">
+        <div class="kpi-left">
+          <div class="kpi-icon-box">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+        <div class="kpi-right">
+          <p class="kpi-num">{{ expCerrados }}</p>
+          <p class="kpi-lbl">Cerrados</p>
+          <div class="kpi-track">
+            <div class="kpi-fill" [style.width.%]="pct(expCerrados, expTotal)"></div>
+          </div>
+        </div>
+        <span class="kpi-pct">{{ pct(expCerrados, expTotal) }}%</span>
+      </div>
+    </div>
+
+    <!-- ── Desglose tipo ────────────────────────────────────── -->
+    @if (expTotal > 0) {
+      <div class="section-label">
+        <i class="fa-solid fa-layer-group"></i> Desglose por tipo
+      </div>
+
+      <div class="card exp-split-card">
+        <div class="exp-split-item">
+          <i class="fa-solid fa-screwdriver-wrench exp-split-icon exp-split-icon--inc"></i>
+          <div>
+            <p class="exp-split-num">{{ expIncidencias }}</p>
+            <p class="exp-split-lbl">Incidencias</p>
+          </div>
+          <div class="exp-split-bar">
+            <div class="exp-split-fill exp-split-fill--inc" [style.width.%]="pct(expIncidencias, expTotal)"></div>
+          </div>
+          <span class="exp-split-pct">{{ pct(expIncidencias, expTotal) }}%</span>
+        </div>
+        <div class="exp-split-divider"></div>
+        <div class="exp-split-item">
+          <i class="fa-solid fa-shield-halved exp-split-icon exp-split-icon--sin"></i>
+          <div>
+            <p class="exp-split-num">{{ expSiniestros }}</p>
+            <p class="exp-split-lbl">Siniestros</p>
+          </div>
+          <div class="exp-split-bar">
+            <div class="exp-split-fill exp-split-fill--sin" [style.width.%]="pct(expSiniestros, expTotal)"></div>
+          </div>
+          <span class="exp-split-pct">{{ pct(expSiniestros, expTotal) }}%</span>
+        </div>
+      </div>
+    }
+
+    <!-- ── Actividad reciente ────────────────────────────────── -->
+    <div class="card recent-card">
+      <div class="recent-header">
+        <div>
+          <h2 class="recent-title">
+            <i class="fa-solid fa-clock-rotate-left"></i> Expedientes recientes
+          </h2>
+          <p class="recent-sub">Últimos expedientes registrados en el sistema</p>
+        </div>
+        <a class="btn btn-secondary btn-sm" routerLink="/expedientes">
+          Ver todos <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      @if (recientes.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
+          <h3>Sin expedientes registrados</h3>
+          <p>Crea el primer expediente desde la sección de Expedientes</p>
+        </div>
+      } @else {
+        <div class="recent-list">
+          @for (e of recientes; track e.id) {
+            <div class="recent-item" [routerLink]="['/expedientes']">
+              <div class="recent-icon" [class.recent-icon--sin]="e.tipo === 'Siniestro'">
+                <i [class]="e.tipo === 'Siniestro' ? 'fa-solid fa-shield-halved' : 'fa-solid fa-screwdriver-wrench'"></i>
+              </div>
+              <div class="recent-body">
+                <p class="recent-comunidad">{{ e.comunidad }}</p>
+                <p class="recent-meta">
+                  @if (e.tipoIncidencia) { <span>{{ e.tipoIncidencia }}</span> }
+                  @if (e.creadoPorNombre) { <span>{{ e.creadoPorNombre }}</span> }
+                </p>
+              </div>
+              <div class="recent-right">
+                <app-status-badge [estado]="e.estado" />
+                <span class="recent-date">{{ e.fecha | date:'dd/MM/yy' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  }
+
+</div>

@@ -1,0 +1,23 @@
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="logotipo-web.png" alt="Fincas Ortega Delgado" class="sidebar-logo-img" />
+  </div>
+
+  <nav class="sidebar-nav">
+    <p class="nav-section-title">Menú</p>
+    @for (item of navItems(); track item.route) {
+      <a
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        <i class="nav-icon" [class]="item.iconClass"></i>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="version-tag">v1.0.0</div>
+  </div>
+</aside>

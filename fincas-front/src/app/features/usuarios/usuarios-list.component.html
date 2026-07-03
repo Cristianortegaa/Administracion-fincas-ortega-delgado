@@ -1,0 +1,197 @@
+<div class="page-wrapper">
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        <i class="fa-solid fa-users"></i>
+        Gestión de Usuarios
+      </h1>
+      <p class="page-subtitle">Administra las cuentas de acceso a la plataforma</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()">
+      <i class="fa-solid fa-user-plus"></i>
+      Nuevo usuario
+    </button>
+  </div>
+
+  <!-- Cargando / Error -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-circle-notch fa-spin"></i>
+      Cargando usuarios…
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      {{ error() }}
+    </div>
+  } @else {
+
+    <!-- Tabla -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Creado</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (users().length === 0) {
+            <tr>
+              <td colspan="4" class="empty-row">No hay usuarios registrados.</td>
+            </tr>
+          }
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>
+                <div class="user-name-cell">
+                  <span class="avatar">{{ user.name.charAt(0).toUpperCase() }}</span>
+                  {{ user.name }}
+                </div>
+              </td>
+              <td class="email-cell">{{ user.email }}</td>
+              <td>
+                <span class="role-badge" [class.role-admin]="user.role === 'Admin'">
+                  @if (user.role === 'Admin') {
+                    <i class="fa-solid fa-shield-halved"></i> Administrador
+                  } @else {
+                    <i class="fa-solid fa-user"></i> Trabajador
+                  }
+                </span>
+              </td>
+              <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
+              <td class="actions-cell">
+                <div class="actions-inner">
+                  <button class="btn-edit-sm" (click)="openEdit(user)" title="Editar usuario">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  @if (user.role !== 'Admin') {
+                    <button class="btn-danger-sm" (click)="confirmDelete(user)" title="Eliminar usuario">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  } @else {
+                    <span class="protected-hint" title="La cuenta de administrador no se puede eliminar">
+                      <i class="fa-solid fa-lock"></i>
+                    </span>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+  }
+</div>
+
+<!-- ── Modal: Crear usuario ─────────────────────────────────────────── -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-user-plus"></i> Nuevo usuario</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (formError()) {
+          <div class="form-error-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ formError() }}
+          </div>
+        }
+
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" [(ngModel)]="form.name" placeholder="Ej. María García" />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="form.email" placeholder="usuario@fincas.com" />
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña <span class="hint">(mínimo 6 caracteres)</span></label>
+          <input type="password" [(ngModel)]="form.password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()" [disabled]="saving()">Cancelar</button>
+        <button class="btn btn-primary" (click)="submitCreate()" [disabled]="saving()">
+          @if (saving()) {
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            Guardando…
+          } @else {
+            <i class="fa-solid fa-check"></i>
+            Crear usuario
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal: Editar usuario ──────────────────────────────────────────── -->
+@if (editTarget()) {
+  <div class="modal-backdrop" (click)="closeEdit()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-pen"></i> Editar usuario</h2>
+        <button class="modal-close" (click)="closeEdit()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (editError()) {
+          <div class="form-error-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ editError() }}
+          </div>
+        }
+
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" [(ngModel)]="editForm.name" placeholder="Nombre" />
+        </div>
+
+        <div class="form-group">
+          <label>Nueva contraseña <span class="hint">(dejar vacío para no cambiarla)</span></label>
+          <input type="password" [(ngModel)]="editForm.newPassword" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeEdit()" [disabled]="editSaving()">Cancelar</button>
+        <button class="btn btn-primary" (click)="submitEdit()" [disabled]="editSaving()">
+          @if (editSaving()) {
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Guardando…
+          } @else {
+            <i class="fa-solid fa-check"></i> Guardar cambios
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Confirmar borrado ───────────────────────────────────── -->
+@if (deleteTarget()) {
+  <app-confirm-modal
+    [title]="'Eliminar usuario'"
+    [detail]="deleteTarget()!.name"
+    [loading]="deleting()"
+    (confirmed)="doDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

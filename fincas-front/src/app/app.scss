@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.content-wrap {
+  flex: 1;
+  min-height: 100dvh;
+  background: var(--bg);
+  overflow-x: hidden;
+
+  &.with-sidebar {
+    margin-left: var(--sidebar-width);
+    padding-top: var(--navbar-height);
+    width: calc(100vw - var(--sidebar-width));
+  }
+}
