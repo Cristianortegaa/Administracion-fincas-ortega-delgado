@@ -24,6 +24,7 @@ export interface Expediente {
   companiaSeguros?:     string | null;
   numeroPoliza?:        string | null;
   telefonoCompania?:    string | null;
+  emailSeguro?:         string | null;
   referenciaSiniestro?: string | null;
   // Auditoría
   creadoPorNombre:      string;
@@ -47,6 +48,7 @@ export interface CreateExpedienteDto {
   companiaSeguros?:     string | null;
   numeroPoliza?:        string | null;
   telefonoCompania?:    string | null;
+  emailSeguro?:         string | null;
   referenciaSiniestro?: string | null;
 }
 

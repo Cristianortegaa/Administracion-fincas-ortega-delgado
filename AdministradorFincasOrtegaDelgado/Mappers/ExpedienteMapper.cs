@@ -29,6 +29,7 @@ public static class ExpedienteMapper
         CompaniaSeguros     = e.CompaniaSeguros,
         NumeroPoliza        = e.NumeroPoliza,
         TelefonoCompania    = e.TelefonoCompania,
+        EmailSeguro         = e.EmailSeguro,
         ReferenciaSiniestro = e.ReferenciaSiniestro,
 
         CreadoPorNombre     = e.CreadoPorNombre,
@@ -59,6 +60,7 @@ public static class ExpedienteMapper
         CompaniaSeguros     = dto.CompaniaSeguros,
         NumeroPoliza        = dto.NumeroPoliza,
         TelefonoCompania    = dto.TelefonoCompania,
+        EmailSeguro         = dto.EmailSeguro,
         ReferenciaSiniestro = dto.ReferenciaSiniestro,
     };
 
@@ -81,6 +83,7 @@ public static class ExpedienteMapper
         e.CompaniaSeguros     = dto.CompaniaSeguros;
         e.NumeroPoliza        = dto.NumeroPoliza;
         e.TelefonoCompania    = dto.TelefonoCompania;
+        e.EmailSeguro         = dto.EmailSeguro;
         e.ReferenciaSiniestro = dto.ReferenciaSiniestro;
 
         // Limpia campos de siniestro si se convierte a incidencia
@@ -90,6 +93,7 @@ public static class ExpedienteMapper
             e.CompaniaSeguros = null;
             e.NumeroPoliza = null;
             e.TelefonoCompania = null;
+            e.EmailSeguro = null;
             e.ReferenciaSiniestro = null;
         }
     }

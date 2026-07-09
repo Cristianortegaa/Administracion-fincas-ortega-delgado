@@ -89,6 +89,7 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
         companiaSeguros:     this.expediente.companiaSeguros ?? null,
         numeroPoliza:        this.expediente.numeroPoliza ?? null,
         telefonoCompania:    this.expediente.telefonoCompania ?? null,
+        emailSeguro:         this.expediente.emailSeguro ?? null,
         referenciaSiniestro: this.expediente.referenciaSiniestro ?? null,
       };
     } else {
@@ -114,6 +115,7 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
       companiaSeguros:     null,
       numeroPoliza:        null,
       telefonoCompania:    null,
+      emailSeguro:         null,
       referenciaSiniestro: null,
     };
   }
@@ -125,6 +127,7 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
       this.form.companiaSeguros     = null;
       this.form.numeroPoliza        = null;
       this.form.telefonoCompania    = null;
+      this.form.emailSeguro         = null;
       this.form.referenciaSiniestro = null;
     }
   }
@@ -137,6 +140,7 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
       this.form.companiaSeguros  = found.companiaSeguros  || this.form.companiaSeguros;
       this.form.numeroPoliza     = found.numeroPoliza     || this.form.numeroPoliza;
       this.form.telefonoCompania = found.telefonoSeguro   || this.form.telefonoCompania;
+      this.form.emailSeguro      = found.email            || this.form.emailSeguro;
       if (found.numeroComunidad) this.form.numeroComunidad = found.numeroComunidad;
     }
   }

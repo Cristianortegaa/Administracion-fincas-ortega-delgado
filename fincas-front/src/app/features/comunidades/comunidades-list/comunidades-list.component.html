@@ -38,12 +38,13 @@
             <th>Compañía Seguros</th>
             <th>Póliza</th>
             <th>Teléfono Seguro</th>
+            <th>Email</th>
             <th class="col-actions">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (comunidades().length === 0) {
-            <tr><td colspan="8" class="empty-row">No hay comunidades registradas.</td></tr>
+            <tr><td colspan="9" class="empty-row">No hay comunidades registradas.</td></tr>
           }
           @for (c of comunidades(); track c.id) {
             <tr>
@@ -54,6 +55,7 @@
               <td>{{ c.companiaSeguros || '—' }}</td>
               <td>{{ c.numeroPoliza || '—' }}</td>
               <td>{{ c.telefonoSeguro || '—' }}</td>
+              <td>{{ c.email || '—' }}</td>
               <td class="actions-cell">
                 <div class="actions-inner">
                   <button class="btn-edit-sm" title="Editar" (click)="openEdit(c)">

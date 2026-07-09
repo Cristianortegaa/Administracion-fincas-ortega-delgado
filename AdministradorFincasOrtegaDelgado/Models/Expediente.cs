@@ -31,6 +31,7 @@ public class Expediente
     public string? CompaniaSeguros     { get; set; }
     public string? NumeroPoliza        { get; set; }
     public string? TelefonoCompania    { get; set; }
+    public string? EmailSeguro         { get; set; }
     public string? ReferenciaSiniestro { get; set; }
 
     // ── Auditoría ─────────────────────────────────────────
