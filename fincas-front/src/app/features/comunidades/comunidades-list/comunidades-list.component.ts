@@ -19,6 +19,17 @@ export class ComunidadesListComponent implements OnInit {
   loading     = signal(true);
   error       = signal<string | null>(null);
 
+  search = '';
+
+  get filteredComunidades(): Comunidad[] {
+    const q = this.search.trim().toLowerCase();
+    if (!q) return this.comunidades();
+    return this.comunidades().filter(c =>
+      c.nombre.toLowerCase().includes(q) ||
+      (c.numeroComunidad != null && String(c.numeroComunidad).includes(q))
+    );
+  }
+
   // Modal crear/editar
   showModal   = signal(false);
   editTarget  = signal<Comunidad | null>(null);

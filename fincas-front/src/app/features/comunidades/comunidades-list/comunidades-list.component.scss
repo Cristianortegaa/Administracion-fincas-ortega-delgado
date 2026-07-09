@@ -45,6 +45,42 @@
 }
 .error-state { color: var(--danger); }
 
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  max-width: 380px;
+
+  i { color: var(--text-muted); font-size: 0.9rem; }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    &::placeholder { color: var(--text-muted); }
+  }
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  font-size: 0.85rem;
+  &:hover { color: var(--text-primary); }
+}
+
 .table-card {
   background: var(--surface);
   border: 1px solid var(--border);

@@ -25,6 +25,23 @@
     </div>
   }
 
+  <!-- Buscador -->
+  @if (!loading() && !error()) {
+    <div class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Buscar por nombre o número..."
+      />
+      @if (search) {
+        <button class="clear-btn" (click)="search = ''" title="Limpiar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+    </div>
+  }
+
   <!-- Tabla -->
   @if (!loading() && !error()) {
     <div class="table-card">
@@ -43,10 +60,12 @@
           </tr>
         </thead>
         <tbody>
-          @if (comunidades().length === 0) {
-            <tr><td colspan="9" class="empty-row">No hay comunidades registradas.</td></tr>
+          @if (filteredComunidades.length === 0) {
+            <tr><td colspan="9" class="empty-row">
+              {{ search ? 'No hay resultados para "' + search + '".' : 'No hay comunidades registradas.' }}
+            </td></tr>
           }
-          @for (c of comunidades(); track c.id) {
+          @for (c of filteredComunidades; track c.id) {
             <tr>
               <td class="num-cell">{{ c.numeroComunidad ?? '—' }}</td>
               <td class="nombre-cell"><strong>{{ c.nombre }}</strong></td>
