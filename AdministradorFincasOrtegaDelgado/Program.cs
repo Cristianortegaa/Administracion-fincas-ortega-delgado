@@ -50,6 +50,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IExpedienteRepository, ExpedienteRepository>();
 builder.Services.AddScoped<IExpedienteService, ExpedienteService>();
+builder.Services.AddScoped<IComunidadRepository, ComunidadRepository>();
+builder.Services.AddScoped<IComunidadService, ComunidadService>();
 
 // ── Backup ────────────────────────────────────────────────────────────────────
 builder.Services.AddSingleton<IBackupService, BackupService>();

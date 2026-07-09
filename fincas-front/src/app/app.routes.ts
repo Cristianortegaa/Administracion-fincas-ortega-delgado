@@ -48,6 +48,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'comunidades',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/comunidades/comunidades-list/comunidades-list.component').then(
+        m => m.ComunidadesListComponent
+      ),
+  },
+  {
     path: 'backup',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>

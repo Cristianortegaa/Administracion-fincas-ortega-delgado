@@ -27,6 +27,7 @@ public static class ExpedienteMapper
 
         NumeroCDA           = e.NumeroCDA,
         CompaniaSeguros     = e.CompaniaSeguros,
+        NumeroPoliza        = e.NumeroPoliza,
         TelefonoCompania    = e.TelefonoCompania,
         ReferenciaSiniestro = e.ReferenciaSiniestro,
 
@@ -56,6 +57,7 @@ public static class ExpedienteMapper
 
         NumeroCDA           = dto.NumeroCDA,
         CompaniaSeguros     = dto.CompaniaSeguros,
+        NumeroPoliza        = dto.NumeroPoliza,
         TelefonoCompania    = dto.TelefonoCompania,
         ReferenciaSiniestro = dto.ReferenciaSiniestro,
     };
@@ -77,6 +79,7 @@ public static class ExpedienteMapper
 
         e.NumeroCDA           = dto.NumeroCDA;
         e.CompaniaSeguros     = dto.CompaniaSeguros;
+        e.NumeroPoliza        = dto.NumeroPoliza;
         e.TelefonoCompania    = dto.TelefonoCompania;
         e.ReferenciaSiniestro = dto.ReferenciaSiniestro;
 
@@ -85,6 +88,7 @@ public static class ExpedienteMapper
         {
             e.NumeroCDA = null;
             e.CompaniaSeguros = null;
+            e.NumeroPoliza = null;
             e.TelefonoCompania = null;
             e.ReferenciaSiniestro = null;
         }

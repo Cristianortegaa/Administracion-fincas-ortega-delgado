@@ -26,6 +26,7 @@ public class ExpedienteDto
     // Solo Siniestro
     public string? NumeroCDA           { get; set; }
     public string? CompaniaSeguros     { get; set; }
+    public string? NumeroPoliza        { get; set; }
     public string? TelefonoCompania    { get; set; }
     public string? ReferenciaSiniestro { get; set; }
 
@@ -53,6 +54,7 @@ public class CreateExpedienteDto
     // Solo Siniestro
     public string? NumeroCDA           { get; set; }
     public string? CompaniaSeguros     { get; set; }
+    public string? NumeroPoliza        { get; set; }
     public string? TelefonoCompania    { get; set; }
     public string? ReferenciaSiniestro { get; set; }
 }

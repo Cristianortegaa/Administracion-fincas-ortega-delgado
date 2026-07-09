@@ -10,10 +10,11 @@ interface NavItem {
 }
 
 const ALL_NAV_ITEMS: NavItem[] = [
-  { iconClass: 'fa-solid fa-house',       label: 'Dashboard',            route: '/dashboard'   },
-  { iconClass: 'fa-solid fa-folder-open', label: 'Expedientes',          route: '/expedientes' },
-  { iconClass: 'fa-solid fa-users',       label: 'Usuarios',             route: '/usuarios',   adminOnly: true },
-  { iconClass: 'fa-solid fa-database',    label: 'Copias de Seguridad',  route: '/backup',     adminOnly: true },
+  { iconClass: 'fa-solid fa-house',       label: 'Dashboard',            route: '/dashboard'    },
+  { iconClass: 'fa-solid fa-folder-open', label: 'Expedientes',          route: '/expedientes'  },
+  { iconClass: 'fa-solid fa-building',    label: 'Comunidades',          route: '/comunidades'  },
+  { iconClass: 'fa-solid fa-users',       label: 'Usuarios',             route: '/usuarios',    adminOnly: true },
+  { iconClass: 'fa-solid fa-database',    label: 'Copias de Seguridad',  route: '/backup',      adminOnly: true },
 ];
 
 @Component({

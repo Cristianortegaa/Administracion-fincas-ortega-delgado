@@ -27,9 +27,10 @@ public class Expediente
     public EstadoExpediente Estado { get; set; } = EstadoExpediente.Abierto;
 
     // ── Solo cuando Tipo = Siniestro ──────────────────────
-    public string? NumeroCDA          { get; set; }
-    public string? CompaniaSeguros    { get; set; }
-    public string? TelefonoCompania   { get; set; }
+    public string? NumeroCDA           { get; set; }
+    public string? CompaniaSeguros     { get; set; }
+    public string? NumeroPoliza        { get; set; }
+    public string? TelefonoCompania    { get; set; }
     public string? ReferenciaSiniestro { get; set; }
 
     // ── Auditoría ─────────────────────────────────────────

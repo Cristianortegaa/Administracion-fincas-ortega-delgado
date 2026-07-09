@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExpedienteService } from '../../../core/services/expediente.service';
+import { ComunidadService } from '../../../core/services/comunidad.service';
 import { ToastService } from '../../../core/services/toast.service';
 import {
   CreateExpedienteDto,
@@ -19,6 +20,7 @@ import {
   TIPOS_INCIDENCIA,
   UpdateExpedienteDto,
 } from '../../../core/models/expediente.model';
+import { Comunidad } from '../../../core/models/comunidad.model';
 import { DescripcionesComponent } from '../../../shared/descripciones/descripciones.component';
 
 @Component({
@@ -34,8 +36,9 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
   @Output() saved  = new EventEmitter<Expediente>();
   @Output() closed = new EventEmitter<void>();
 
-  private readonly service = inject(ExpedienteService);
-  private readonly toast   = inject(ToastService);
+  private readonly service          = inject(ExpedienteService);
+  private readonly comunidadService = inject(ComunidadService);
+  private readonly toast            = inject(ToastService);
 
   readonly estados         = ESTADOS_EXP;
   readonly tiposIncidencia = TIPOS_INCIDENCIA;
@@ -49,13 +52,23 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
   /** Input temporal para añadir un nuevo reparador */
   newReparador = '';
 
+  /** Lista de comunidades para el selector */
+  comunidades: Comunidad[] = [];
+
   get isEdit():      boolean { return this.expediente !== null; }
   get isSiniestro(): boolean { return this.form.tipo === 'Siniestro'; }
   get title():       string  {
     return `${this.isEdit ? 'Editar' : 'Nuevo'} Expediente`;
   }
 
-  ngOnInit():    void { this.resetForm(); }
+  ngOnInit(): void {
+    this.resetForm();
+    this.comunidadService.getAll().subscribe({
+      next: (list) => { this.comunidades = list; },
+      error: () => {},
+    });
+  }
+
   ngOnChanges(): void { this.resetForm(); }
 
   private resetForm(): void {
@@ -67,13 +80,14 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
         comunidad:           this.expediente.comunidad,
         numeroComunidad:     this.expediente.numeroComunidad ?? null,
         ubicacion:           this.expediente.ubicacion,
-        descripcion:         '',    // empty — new entry only; existing shown separately
+        descripcion:         '',
         tipoIncidencia:      this.expediente.tipoIncidencia,
         reparadores:         [...(this.expediente.reparadores ?? [])],
         observaciones:       this.expediente.observaciones,
         estado:              this.expediente.estado,
         numeroCDA:           this.expediente.numeroCDA ?? null,
         companiaSeguros:     this.expediente.companiaSeguros ?? null,
+        numeroPoliza:        this.expediente.numeroPoliza ?? null,
         telefonoCompania:    this.expediente.telefonoCompania ?? null,
         referenciaSiniestro: this.expediente.referenciaSiniestro ?? null,
       };
@@ -98,6 +112,7 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
       estado:              'Abierto',
       numeroCDA:           null,
       companiaSeguros:     null,
+      numeroPoliza:        null,
       telefonoCompania:    null,
       referenciaSiniestro: null,
     };
@@ -108,8 +123,21 @@ export class ExpedienteFormComponent implements OnInit, OnChanges {
     if (tipo === 'Incidencia') {
       this.form.numeroCDA           = null;
       this.form.companiaSeguros     = null;
+      this.form.numeroPoliza        = null;
       this.form.telefonoCompania    = null;
       this.form.referenciaSiniestro = null;
+    }
+  }
+
+  /** Al seleccionar una comunidad del desplegable, rellena automáticamente los datos del seguro */
+  onComunidadChange(nombre: string): void {
+    this.form.comunidad = nombre;
+    const found = this.comunidades.find(c => c.nombre === nombre);
+    if (found && this.form.tipo === 'Siniestro') {
+      this.form.companiaSeguros  = found.companiaSeguros  || this.form.companiaSeguros;
+      this.form.numeroPoliza     = found.numeroPoliza     || this.form.numeroPoliza;
+      this.form.telefonoCompania = found.telefonoSeguro   || this.form.telefonoCompania;
+      if (found.numeroComunidad) this.form.numeroComunidad = found.numeroComunidad;
     }
   }
 

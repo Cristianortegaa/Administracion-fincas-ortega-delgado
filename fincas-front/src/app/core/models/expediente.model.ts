@@ -22,6 +22,7 @@ export interface Expediente {
   // Solo siniestro
   numeroCDA?:           string | null;
   companiaSeguros?:     string | null;
+  numeroPoliza?:        string | null;
   telefonoCompania?:    string | null;
   referenciaSiniestro?: string | null;
   // Auditoría
@@ -44,6 +45,7 @@ export interface CreateExpedienteDto {
   estado:              EstadoExpediente;
   numeroCDA?:           string | null;
   companiaSeguros?:     string | null;
+  numeroPoliza?:        string | null;
   telefonoCompania?:    string | null;
   referenciaSiniestro?: string | null;
 }

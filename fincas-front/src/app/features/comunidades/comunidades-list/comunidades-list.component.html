@@ -1,0 +1,142 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title"><i class="fa-solid fa-building"></i> Comunidades</h1>
+      <p class="page-subtitle">Gestión de comunidades y sus datos de seguro</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <i class="fa-solid fa-plus"></i> Nueva Comunidad
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i> Cargando comunidades...
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-triangle-exclamation"></i> {{ error() }}
+    </div>
+  }
+
+  <!-- Tabla -->
+  @if (!loading() && !error()) {
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Comunidad</th>
+            <th>CIF</th>
+            <th>Dirección</th>
+            <th>Compañía Seguros</th>
+            <th>Póliza</th>
+            <th>Teléfono Seguro</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (comunidades().length === 0) {
+            <tr><td colspan="8" class="empty-row">No hay comunidades registradas.</td></tr>
+          }
+          @for (c of comunidades(); track c.id) {
+            <tr>
+              <td class="num-cell">{{ c.numeroComunidad ?? '—' }}</td>
+              <td class="nombre-cell"><strong>{{ c.nombre }}</strong></td>
+              <td>{{ c.cif || '—' }}</td>
+              <td>{{ c.direccion || '—' }}</td>
+              <td>{{ c.companiaSeguros || '—' }}</td>
+              <td>{{ c.numeroPoliza || '—' }}</td>
+              <td>{{ c.telefonoSeguro || '—' }}</td>
+              <td class="actions-cell">
+                <div class="actions-inner">
+                  <button class="btn-edit-sm" title="Editar" (click)="openEdit(c)">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button class="btn-danger-sm" title="Eliminar" (click)="confirmDelete(c)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>
+
+<!-- Modal Crear / Editar -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click.self)="closeModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-building"></i> {{ modalTitle }}</h2>
+        <button class="modal-close" (click)="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        @if (formError()) {
+          <div class="form-error-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ formError() }}
+          </div>
+        }
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input [(ngModel)]="form.nombre" placeholder="Nombre de la comunidad" />
+          </div>
+          <div class="form-group">
+            <label>Número</label>
+            <input type="number" [(ngModel)]="form.numeroComunidad" placeholder="Nº comunidad" />
+          </div>
+          <div class="form-group">
+            <label>CIF</label>
+            <input [(ngModel)]="form.cif" placeholder="CIF de la comunidad" />
+          </div>
+          <div class="form-group form-group--full">
+            <label>Dirección</label>
+            <input [(ngModel)]="form.direccion" placeholder="Dirección de la comunidad" />
+          </div>
+          <div class="form-group">
+            <label>Compañía de Seguros</label>
+            <input [(ngModel)]="form.companiaSeguros" placeholder="Nombre de la compañía" />
+          </div>
+          <div class="form-group">
+            <label>Número de Póliza</label>
+            <input [(ngModel)]="form.numeroPoliza" placeholder="Nº póliza" />
+          </div>
+          <div class="form-group">
+            <label>Teléfono Seguro</label>
+            <input [(ngModel)]="form.telefonoSeguro" placeholder="Teléfono de la compañía" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+          @if (saving()) { <i class="fa-solid fa-spinner fa-spin"></i> Guardando... }
+          @else { <i class="fa-solid fa-floppy-disk"></i> Guardar }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Confirmación borrado -->
+@if (deleteTarget()) {
+  <app-confirm-modal
+    title="Eliminar comunidad"
+    [message]="'¿Eliminar la comunidad ' + deleteTarget()!.nombre + '? Esta acción no se puede deshacer.'"
+    confirmLabel="Eliminar"
+    [loading]="deleting()"
+    (confirmed)="doDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

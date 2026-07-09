@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Incidencia> Incidencias => Set<Incidencia>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Expediente> Expedientes => Set<Expediente>();
+    public DbSet<Comunidad> Comunidades => Set<Comunidad>();
 
     private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
 
@@ -103,6 +104,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CompaniaSeguros).HasMaxLength(200);
             entity.Property(e => e.TelefonoCompania).HasMaxLength(50);
             entity.Property(e => e.ReferenciaSiniestro).HasMaxLength(100);
+            entity.Property(e => e.NumeroPoliza).HasMaxLength(100);
             entity.Property(e => e.CreadoPorNombre).HasMaxLength(200);
             entity.Property(e => e.ModificadoPorNombre).HasMaxLength(200);
             entity.Property(e => e.Descripcion)
@@ -111,6 +113,17 @@ public class ApplicationDbContext : DbContext
                     v => JsonSerializer.Serialize(v, JsonOpts),
                     v => DeserializeDescripciones(v)
                 );
+        });
+
+        modelBuilder.Entity<Comunidad>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.Nombre).HasMaxLength(200).IsRequired();
+            entity.Property(c => c.CIF).HasMaxLength(20);
+            entity.Property(c => c.Direccion).HasMaxLength(300);
+            entity.Property(c => c.CompaniaSeguros).HasMaxLength(200);
+            entity.Property(c => c.NumeroPoliza).HasMaxLength(100);
+            entity.Property(c => c.TelefonoSeguro).HasMaxLength(50);
         });
     }
 }
