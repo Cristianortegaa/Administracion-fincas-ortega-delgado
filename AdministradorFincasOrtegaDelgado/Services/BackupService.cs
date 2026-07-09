@@ -97,14 +97,14 @@ public class BackupService(
         await using var tx = await conn.BeginTransactionAsync();
         try
         {
-            // Deshabilitar FK para poder truncar sin orden
-            await using (var cmd = new NpgsqlCommand("SET session_replication_role = 'replica'", conn, tx))
+            // Deshabilitar FK solo durante esta transacción (SET LOCAL revierte al hacer COMMIT/ROLLBACK)
+            await using (var cmd = new NpgsqlCommand("SET LOCAL session_replication_role = 'replica'", conn, tx))
                 await cmd.ExecuteNonQueryAsync();
 
             // Vaciar las tablas que vamos a restaurar
             foreach (var table in tables)
             {
-                await using var cmd = new NpgsqlCommand($"TRUNCATE TABLE \"{table}\"", conn, tx);
+                await using var cmd = new NpgsqlCommand($"TRUNCATE TABLE \"{table}\" CASCADE", conn, tx);
                 await cmd.ExecuteNonQueryAsync();
             }
 
@@ -116,10 +116,7 @@ public class BackupService(
                 await cmd.ExecuteNonQueryAsync();
             }
 
-            // Rehabilitar FK
-            await using (var cmd = new NpgsqlCommand("SET session_replication_role = 'DEFAULT'", conn, tx))
-                await cmd.ExecuteNonQueryAsync();
-
+            // SET LOCAL se revierte automáticamente al hacer COMMIT
             await tx.CommitAsync();
             logger.LogInformation("Restauración completada. {Count} registros restaurados.", inserts.Count);
         }
