@@ -59,6 +59,77 @@ public class BackupService(
         await WriteBackupAsync(destination);
     }
 
+    // ── Restore ───────────────────────────────────────────────────────────────────
+
+    public async Task RestoreFromSqlAsync(Stream sqlStream)
+    {
+        var connStr = config.GetConnectionString("DefaultConnection")
+                      ?? throw new InvalidOperationException("No se encontró la cadena de conexión.");
+
+        using var reader = new StreamReader(sqlStream, Encoding.UTF8);
+        var sql = await reader.ReadToEndAsync();
+
+        // Extraer los INSERT statements y qué tablas se restauran
+        var inserts = sql
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(l => l.Trim())
+            .Where(l => l.StartsWith("INSERT INTO", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (inserts.Count == 0)
+            throw new InvalidOperationException("El archivo no contiene datos de backup válidos.");
+
+        // Tablas referenciadas en el backup
+        var tables = inserts
+            .Select(l =>
+            {
+                // INSERT INTO "NombreTabla" ...
+                var start = l.IndexOf('"') + 1;
+                var end   = l.IndexOf('"', start);
+                return start > 0 && end > start ? l[start..end] : null;
+            })
+            .Where(t => t is not null)
+            .Distinct()
+            .ToList();
+
+        await using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+        await using var tx = await conn.BeginTransactionAsync();
+        try
+        {
+            // Deshabilitar FK para poder truncar sin orden
+            await using (var cmd = new NpgsqlCommand("SET session_replication_role = 'replica'", conn, tx))
+                await cmd.ExecuteNonQueryAsync();
+
+            // Vaciar las tablas que vamos a restaurar
+            foreach (var table in tables)
+            {
+                await using var cmd = new NpgsqlCommand($"TRUNCATE TABLE \"{table}\"", conn, tx);
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Ejecutar todos los INSERT
+            foreach (var insert in inserts)
+            {
+                var stmt = insert.EndsWith(';') ? insert : insert + ";";
+                await using var cmd = new NpgsqlCommand(stmt, conn, tx);
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Rehabilitar FK
+            await using (var cmd = new NpgsqlCommand("SET session_replication_role = 'DEFAULT'", conn, tx))
+                await cmd.ExecuteNonQueryAsync();
+
+            await tx.CommitAsync();
+            logger.LogInformation("Restauración completada. {Count} registros restaurados.", inserts.Count);
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
+        }
+    }
+
     // ── Core: genera SQL puro con Npgsql ─────────────────────────────────────────
 
     private async Task WriteBackupAsync(Stream output)

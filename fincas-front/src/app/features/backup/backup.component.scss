@@ -82,6 +82,33 @@
 /* ── Download card ───────────────────────────────────────────────────────── */
 .download-card { }
 
+/* ── Restore card ────────────────────────────────────────────────────────── */
+.restore-card {
+  border-left: 3px solid #f59e0b;
+}
+
+.restore-actions { margin-top: 1rem; }
+
+.btn-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(.disabled) { background: #d97706; }
+  &.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+}
+
+.file-input-hidden { display: none; }
+
 .section-desc {
   font-size: 0.875rem;
   color: var(--text-muted);

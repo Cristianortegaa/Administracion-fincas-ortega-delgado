@@ -43,6 +43,11 @@ export class BackupComponent implements OnInit {
     maxBackups:    30,
   };
 
+  // ── Restauración ─────────────────────────────────────────────────────────────
+  restoring         = signal(false);
+  showRestoreConfirm = signal(false);
+  pendingRestoreFile: File | null = null;
+
   // ── Borrado ───────────────────────────────────────────────────────────────────
   pendingDelete = signal<BackupFile | null>(null);
   deleting      = signal(false);
@@ -123,6 +128,45 @@ export class BackupComponent implements OnInit {
     this.svc.deleteFile(file.fileName).subscribe({
       next: () => { this.pendingDelete.set(null); this.deleting.set(false); this.loadFiles(); },
       error: () => { alert('Error al eliminar la copia.'); this.deleting.set(false); },
+    });
+  }
+
+  // ── Restauración ─────────────────────────────────────────────────────────────
+  onRestoreFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file  = input.files?.[0];
+    if (!file) return;
+    if (!file.name.endsWith('.sql')) {
+      this.actionError.set('El archivo debe ser un .sql generado por esta aplicación.');
+      return;
+    }
+    this.pendingRestoreFile = file;
+    this.showRestoreConfirm.set(true);
+    input.value = ''; // reset input para poder volver a seleccionar el mismo archivo
+  }
+
+  cancelRestore(): void {
+    this.pendingRestoreFile = null;
+    this.showRestoreConfirm.set(false);
+  }
+
+  doRestore(): void {
+    if (!this.pendingRestoreFile) return;
+    this.restoring.set(true);
+    this.showRestoreConfirm.set(false);
+    this.clearMessages();
+
+    this.svc.restore(this.pendingRestoreFile).subscribe({
+      next: (res) => {
+        this.restoring.set(false);
+        this.pendingRestoreFile = null;
+        this.showMsg('✓ ' + res.message);
+      },
+      error: (err) => {
+        this.restoring.set(false);
+        this.pendingRestoreFile = null;
+        this.actionError.set(err.error?.message ?? 'Error al restaurar la base de datos.');
+      },
     });
   }
 

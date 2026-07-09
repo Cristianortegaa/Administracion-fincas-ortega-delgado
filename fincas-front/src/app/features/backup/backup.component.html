@@ -73,6 +73,33 @@
     </div>
   </div>
 
+  <!-- ── Restaurar backup ─────────────────────────────── -->
+  <div class="card restore-card">
+    <h2 class="section-title">
+      <i class="fa-solid fa-rotate-left"></i> Restaurar base de datos
+    </h2>
+    <p class="section-desc">
+      Selecciona un archivo <strong>.sql</strong> generado previamente por esta aplicación.
+      <strong>¡Atención!</strong> Esto reemplazará todos los datos actuales por los del backup.
+    </p>
+    <div class="restore-actions">
+      <label class="btn btn-warning btn-lg" [class.disabled]="restoring()">
+        @if (restoring()) {
+          <span class="spinner-sm"></span> Restaurando…
+        } @else {
+          <i class="fa-solid fa-folder-open"></i> Seleccionar backup para restaurar
+        }
+        <input
+          type="file"
+          accept=".sql"
+          class="file-input-hidden"
+          [disabled]="restoring()"
+          (change)="onRestoreFileSelected($event)"
+        />
+      </label>
+    </div>
+  </div>
+
   <!-- ── Configuración ─────────────────────────────────── -->
   <div class="card settings-card">
     <div class="settings-header">
@@ -204,6 +231,18 @@
   </div>
 
 </div>
+
+<!-- ── Confirmar restauración ────────────────────── -->
+@if (showRestoreConfirm()) {
+  <app-confirm-modal
+    title="Restaurar base de datos"
+    [message]="'Se restaurará el archivo ' + (pendingRestoreFile?.name ?? '') + '. Todos los datos actuales serán reemplazados. ¿Estás seguro?'"
+    confirmLabel="Sí, restaurar"
+    [loading]="restoring()"
+    (confirmed)="doRestore()"
+    (cancelled)="cancelRestore()"
+  />
+}
 
 <!-- ── Confirmar borrado ──────────────────────────── -->
 @if (pendingDelete()) {

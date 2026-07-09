@@ -29,6 +29,29 @@ public class BackupController(IBackupService backupService) : ControllerBase
         }
     }
 
+    // ── POST /api/backup/restore ── restaura desde archivo .sql ─────────────────
+    [HttpPost("restore")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB máximo
+    public async Task<IActionResult> Restore(IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { message = "No se ha proporcionado ningún archivo." });
+
+        if (!file.FileName.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { message = "El archivo debe ser un .sql generado por esta aplicación." });
+
+        try
+        {
+            await using var stream = file.OpenReadStream();
+            await backupService.RestoreFromSqlAsync(stream);
+            return Ok(new { message = "Base de datos restaurada correctamente." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Error al restaurar: {ex.Message}" });
+        }
+    }
+
     // ── POST /api/backup/save ── crea y guarda en servidor ───────────────────────
     [HttpPost("save")]
     public async Task<IActionResult> SaveToServer()

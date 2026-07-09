@@ -49,6 +49,13 @@ export class BackupService {
     return this.http.delete<void>(`${this.baseUrl}/files/${encodeURIComponent(fileName)}`);
   }
 
+  /** Restore database from a .sql backup file */
+  restore(file: File): Observable<{ message: string }> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.http.post<{ message: string }>(this.baseUrl + '/restore', form);
+  }
+
   getSettings(): Observable<BackupSettings> {
     return this.http.get<BackupSettings>(this.baseUrl + '/settings');
   }
