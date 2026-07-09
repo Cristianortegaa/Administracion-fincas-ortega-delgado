@@ -29,6 +29,7 @@ public class ComunidadService(IComunidadRepository repo) : IComunidadService
             CompaniaSeguros = dto.CompaniaSeguros.Trim(),
             NumeroPoliza    = dto.NumeroPoliza.Trim(),
             TelefonoSeguro  = dto.TelefonoSeguro.Trim(),
+            Email           = dto.Email.Trim(),
             FechaCreacion     = DateTime.UtcNow,
             FechaModificacion = DateTime.UtcNow,
         };
@@ -48,6 +49,7 @@ public class ComunidadService(IComunidadRepository repo) : IComunidadService
         entity.CompaniaSeguros = dto.CompaniaSeguros.Trim();
         entity.NumeroPoliza    = dto.NumeroPoliza.Trim();
         entity.TelefonoSeguro  = dto.TelefonoSeguro.Trim();
+        entity.Email           = dto.Email.Trim();
         entity.FechaModificacion = DateTime.UtcNow;
 
         var updated = await repo.UpdateAsync(entity);
@@ -66,6 +68,7 @@ public class ComunidadService(IComunidadRepository repo) : IComunidadService
         CompaniaSeguros = c.CompaniaSeguros,
         NumeroPoliza    = c.NumeroPoliza,
         TelefonoSeguro  = c.TelefonoSeguro,
+        Email           = c.Email,
         FechaCreacion     = c.FechaCreacion,
         FechaModificacion = c.FechaModificacion,
     };

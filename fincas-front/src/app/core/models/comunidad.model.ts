@@ -7,6 +7,7 @@ export interface Comunidad {
   companiaSeguros:  string;
   numeroPoliza:     string;
   telefonoSeguro:   string;
+  email:            string;
   fechaCreacion:    string;
   fechaModificacion: string;
 }
@@ -19,6 +20,7 @@ export interface CreateComunidadDto {
   companiaSeguros:  string;
   numeroPoliza:     string;
   telefonoSeguro:   string;
+  email:            string;
 }
 
 export type UpdateComunidadDto = CreateComunidadDto;

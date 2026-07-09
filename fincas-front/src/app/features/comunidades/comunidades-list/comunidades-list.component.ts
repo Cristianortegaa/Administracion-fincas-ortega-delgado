@@ -58,6 +58,7 @@ export class ComunidadesListComponent implements OnInit {
       companiaSeguros: c.companiaSeguros,
       numeroPoliza:    c.numeroPoliza,
       telefonoSeguro:  c.telefonoSeguro,
+      email:           c.email,
     };
     this.formError.set(null);
     this.showModal.set(true);
@@ -117,6 +118,6 @@ export class ComunidadesListComponent implements OnInit {
   }
 
   private emptyForm(): CreateComunidadDto {
-    return { nombre: '', numeroComunidad: null, cif: '', direccion: '', companiaSeguros: '', numeroPoliza: '', telefonoSeguro: '' };
+    return { nombre: '', numeroComunidad: null, cif: '', direccion: '', companiaSeguros: '', numeroPoliza: '', telefonoSeguro: '', email: '' };
   }
 }
